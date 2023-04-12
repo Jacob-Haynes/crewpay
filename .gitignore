@@ -3,3 +3,6 @@
 .cache/
 src/crewpay/_version.py
 .idea/
+venv/
+dist/
+build/
