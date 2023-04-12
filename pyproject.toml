@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=45", "setuptools_scm>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+local_scheme = "no-local-version"
+write_to = "src/crewpay/_version.py"
+
+[tool.black]
+line-length = 120
+# Keep this in sync with ISORT_SOURCE_PATHS variable in noxfile.py.
+include = 'src/.*\.pyi?$'
+
+[tool.isort]
+profile = "black"
+known_first_party = "src"

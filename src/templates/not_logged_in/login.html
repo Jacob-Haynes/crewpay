@@ -1,0 +1,40 @@
+<div class="page-login">
+  <div class="ui centered grid container">
+    <div class="nine wide column">
+        <div>
+            {% if is_login_failed %}
+                      <div class="ui icon warning message">
+                          <i class="lock icon"></i>
+          <div class="content">
+            <div class="header">
+              Login failed!
+            </div>
+            <p>You might have misspelled your username or password!</p>
+          </div>
+        </div>
+            {% endif %}
+        </div>
+
+      <div class="ui fluid card">
+        <div class="content">
+        <form class="ui form" action="/login" method="POST">
+            {% csrf_token %}
+
+          <div class="field">
+            <label>User</label>
+            <input type="text" name="username" placeholder="User">
+          </div>
+          <div class="field">
+            <label>Password</label>
+            <input type="password" name="password" placeholder="Password">
+          </div>
+          <button class="ui primary labeled icon button" type="submit">
+            <i class="unlock alternate icon"></i>
+            Login
+          </button>
+        </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
