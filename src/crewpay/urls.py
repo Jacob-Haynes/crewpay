@@ -15,7 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 from crewpay import views
 
@@ -27,4 +27,5 @@ urlpatterns = [
     path('token', views.token, name="token"),
     path('login', views.login_view, name="login"),
     path('logout', views.logout_view, name="logout"),
+    path("api/v1", include('api.v1.urls')),
 ]
