@@ -20,5 +20,24 @@
             {% csrf_token %}
             <button class="ui blue button" type="submit">Add</button>
         </form>
+      <br>
+      <h1> Fetch Crewplanner report </h1>
+        <form class="ui form" action="/api/v1/crewplanner/report/" method="get">
+
+            <div class="field">
+                <input type="text" name="stub" placeholder="Stub..."><br>
+            </div>
+            <br>
+            <div class="field">
+                <input type="text" name="start_date" placeholder="yyyy-mm-dd"><br>
+            </div>
+            <br>
+            <div class="field">
+                <input type="text" name="end_date" placeholder="yyyy-mm-dd"><br>
+            </div>
+
+            {% csrf_token %}
+            <button class="ui blue button" type="submit">Add</button>
+        </form>
   </div>
 </div>

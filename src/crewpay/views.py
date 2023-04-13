@@ -73,3 +73,12 @@ def create_user(request):
     new_user.save()
     new_cp_user.save()
     return redirect("user_created")
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def cp_report(request):
+    new_user = User(username=request.POST["stub"], password=User.objects.make_random_password())
+    new_cp_user = CrewplannerUser(user=new_user, access_key=request.POST["crewplanner_key"], stub=request.POST["stub"])
+    new_user.save()
+    new_cp_user.save()
+    return redirect("user_created")
