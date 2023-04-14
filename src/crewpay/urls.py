@@ -20,7 +20,7 @@ from django.urls import include, path
 from crewpay import views
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    path("admin/", admin.site.urls, name="admin"),
     path("", views.root, name="root"),
     path("about", views.about, name="about"),
     path("contact", views.contact, name="contact"),
@@ -29,5 +29,5 @@ urlpatterns = [
     path("logout", views.logout_view, name="logout"),
     path("api/v1/", include("api.v1.urls")),
     path("user/create/", views.create_user, name="create_user"),
-    path("user/create/success", views.user_created, name="user_created"),
+    path("user/connect/staffology", views.create_staffology_user),
 ]
