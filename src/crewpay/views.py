@@ -1,6 +1,3 @@
-import json
-
-import requests
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -9,10 +6,10 @@ from django.core.handlers.wsgi import WSGIRequest
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.shortcuts import redirect, render
-from django.utils.functional import LazyObject
 from rest_framework.authtoken.models import Token
 
-from crewpay.models import CrewplannerUser, Employer, StaffologyUser
+from api.v1.staffology.employers import create_employer
+from crewpay.models import CrewplannerUser, StaffologyUser
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
@@ -74,20 +71,6 @@ def contact(request):
 def token(request):
     token = Token.objects.get(user__exact=request.user)
     return render(request, "logged_in/token.html", {"token": token})
-
-
-def create_employer(user: User, access_key: str) -> None:  # pylint: disable=unused-argument
-    payload = {"name": user.username}
-    response = requests.post(
-        "https://api.staffology.co.uk/employers",
-        auth=("username", access_key),
-        data=json.dumps(payload),
-        headers={"content-type": "text/json"},
-    )
-    if not response.ok:
-        raise ValueError(response.text)
-    employer = Employer(user=user, id=response.json()["id"])
-    employer.save()
 
 
 @user_passes_test(lambda u: u.is_superuser)

@@ -5,6 +5,7 @@ from django.urls import include, path
 from api.v1 import views
 from api.v1.crewplanner.employees import employees_get
 from api.v1.crewplanner.report import report_get
+from api.v1.staffology.employees import sync_employees
 from api.v1.staffology.employers import employers_get
 
 urlpatterns = [
@@ -13,4 +14,5 @@ urlpatterns = [
     path("crewplanner/employees/", employees_get),
     path("crewplanner/report/", report_get),
     path("staffology/employers/", employers_get),
+    path("staffology/employees/", sync_employees),
 ]
