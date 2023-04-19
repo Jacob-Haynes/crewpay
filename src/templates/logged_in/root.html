@@ -8,6 +8,17 @@
 
 <div style="display:flex;justify-content:center;align-items:center;width:100%;height:100%;">
   <div style="width:50%;height:100%">
+
+      <h1> Sync Employees </h1>
+
+      <form action="/api/v1/staffology/employees" method="get">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" value="Sync">
+    </form>
+
+      <br>
+
       <h1> Create New User </h1>
 
       <div>

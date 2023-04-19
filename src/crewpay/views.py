@@ -9,7 +9,8 @@ from django.shortcuts import redirect, render
 from rest_framework.authtoken.models import Token
 
 from api.v1.staffology.employers import create_employer
-from crewpay.models import CrewplannerUser, StaffologyUser
+from crewpay.forms import EmployerForm
+from crewpay.models import CrewplannerUser, StaffologyUser, Employer
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
@@ -17,6 +18,11 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
 
+
+def get_employer_choices():
+    employers = Employer.objects.all()
+    result = tuple([(0, "")] + [(employer.id, employer.user) for employer in employers])
+    return result
 
 def root(request: WSGIRequest):
     if not request.user.is_authenticated:
@@ -38,7 +44,11 @@ def root(request: WSGIRequest):
     elif "staffology_connected_success" in request.GET:
         context = {"staffology_connected_success": True}
     else:
-        context = None
+        context = {}
+
+    form = EmployerForm()
+    form.fields['employer'].choices = get_employer_choices()
+    context['form'] = form
     return render(request, "logged_in/root.html", context)
 
 

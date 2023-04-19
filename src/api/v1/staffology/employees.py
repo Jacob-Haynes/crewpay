@@ -23,14 +23,14 @@ from crewpay.models import CrewplannerUser, Employee, Employer, StaffologyUser
 @api_view(["GET"])
 @user_passes_test(lambda u: u.is_superuser)
 def sync_employees(request: Request) -> Response:  # pylint: disable=unused-argument
-    return process_employees(request.GET["username"])
+    return process_employees(request.GET["employer"])
 
 
-def process_employees(username) -> Response:  # pylint: disable=unused-argument
+def process_employees(employer_id: str) -> Response:  # pylint: disable=unused-argument
     # some code that gets CP list and existing database employees
-    employer_id = Employer.objects.get(user__username=username).id
-    access_token = CrewplannerUser.objects.get(user__username=username).access_key
-    stub = CrewplannerUser.objects.get(user__username=username).stub
+    user = Employer.objects.get(id=employer_id).user
+    access_token = CrewplannerUser.objects.get(user=user).access_key
+    stub = CrewplannerUser.objects.get(user=user).stub
     cp_employees = crewplanner_employees_get(stub, access_token)
     stored_cp_employee_ids = Employee.objects.filter(employer=employer_id).values_list("crewplanner_id", flat=True)
     existing_ids = []
@@ -87,8 +87,8 @@ def process_employees(username) -> Response:  # pylint: disable=unused-argument
     # get list of stored employees not in cp
     id_list = [cp_employee.id for cp_employee in cp_employees]
     deleted = list(set(stored_cp_employee_ids).difference(id_list))
+    to_delete = []
     if len(deleted) > 0:
-        to_delete = []
         for cp_id in deleted:
             to_delete.append(Employee.objects.get(crewplanner_id=cp_id).staffology_id)
         StaffologyAPI().delete_employees(employer_id, to_delete)
@@ -103,7 +103,7 @@ def process_employees(username) -> Response:  # pylint: disable=unused-argument
             "Employees Added": new_employee_count,
             "Marked as Leaver": len(leavers),
             "Marked as Rehired": rehires,
-            "Deleted Employees": len(deleted),
+            "Deleted Employees": len(to_delete),
         }
     )
 
