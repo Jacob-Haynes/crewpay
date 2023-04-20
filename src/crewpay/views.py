@@ -24,6 +24,7 @@ def get_employer_choices():
     result = tuple([(0, "")] + [(employer.id, employer.user) for employer in employers])
     return result
 
+
 def root(request: WSGIRequest):
     if not request.user.is_authenticated:
         failed = False

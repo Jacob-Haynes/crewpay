@@ -40,3 +40,11 @@ class Employee(models.Model):
     crewplanner_id = models.CharField(unique=True, help_text="Crewplanner employee ID", max_length=500)
     staffology_id = models.CharField(unique=True, help_text="Crewplanner employee ID", max_length=500)
     status = models.CharField(help_text="ACTIVE or ARCHIVED (CP driven)", max_length=20)
+
+
+class InvalidEmployee(models.Model):
+    employee_id = models.CharField(max_length=50)
+    name = models.CharField(max_length=100)
+    error = models.TextField()
+    date_time = models.DateTimeField(auto_now_add=True)
+    employer = models.ForeignKey(Employer, related_name="invalid_employees", on_delete=models.CASCADE)

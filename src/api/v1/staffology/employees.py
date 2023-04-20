@@ -17,7 +17,7 @@ from api.v1.staffology.dto import (
     StaffologyPersonalDetails,
     StaffologyStarterDetails,
 )
-from crewpay.models import CrewplannerUser, Employee, Employer, StaffologyUser
+from crewpay.models import CrewplannerUser, Employee, Employer, StaffologyUser, InvalidEmployee
 
 
 @api_view(["GET"])
@@ -27,15 +27,18 @@ def sync_employees(request: Request) -> Response:  # pylint: disable=unused-argu
 
 
 def process_employees(employer_id: str) -> Response:  # pylint: disable=unused-argument
-    # some code that gets CP list and existing database employees
     user = Employer.objects.get(id=employer_id).user
     access_token = CrewplannerUser.objects.get(user=user).access_key
     stub = CrewplannerUser.objects.get(user=user).stub
-    cp_employees = crewplanner_employees_get(stub, access_token)
+    # get cp employee list
+    cp_employees_list = crewplanner_employees_get(stub, access_token)
+    cp_employees = list(filter(lambda item: item is not None, cp_employees_list))
+    failed_employees = len(cp_employees_list) - len(cp_employees)
+    # check for employees that already exist in database
     stored_cp_employee_ids = Employee.objects.filter(employer=employer_id).values_list("crewplanner_id", flat=True)
-    existing_ids = []
 
-    # new employees
+    # check for new employees
+    existing_ids = []
     new_employee_count = 0
     for cp_employee in cp_employees:
         if cp_employee.id in stored_cp_employee_ids:
@@ -45,18 +48,57 @@ def process_employees(employer_id: str) -> Response:  # pylint: disable=unused-a
         if cp_employee.status == "ARCHIVED":
             # inactive and does not exist in staffology so can just skip
             continue
-        new_employee_payload = cp_emp_to_staffology_emp(cp_employee)
-        created_staffology_employee = StaffologyAPI().employee_create(employer_id, new_employee_payload)
-        new_employee = Employee(
-            employer_id=employer_id,
-            crewplanner_id=cp_employee.id,
-            staffology_id=created_staffology_employee["id"],
-            status="ACTIVE",
-        )
-        new_employee.save()
+        # create new employee
+        new_employee(cp_employee, employer_id)
         new_employee_count += 1
 
     # leavers
+    leavers = mark_as_leaver(existing_ids, employer_id)
+
+    # rehire
+    rehires = mark_as_rehire(existing_ids, employer_id)
+
+    # delete
+    deleted = delete_employee(cp_employees, employer_id)
+
+    # update details
+    # TODO: update employee details - need to think of a way to efficently check for differences
+    # return totals
+    failures = InvalidEmployee.objects.filter(employer=employer_id).order_by('date_time')[:failed_employees]
+    failures_list = []
+    for failure in failures:
+        failure_dict = {
+            'employee_id': failure.employee_id,
+            'name': failure.name,
+            'error': failure.error,
+            'date_time': failure.date_time,
+        }
+        failures_list.append(failure_dict)
+    return Response(
+        {
+            "Employees Added": new_employee_count,
+            "Failed to Import": failed_employees,
+            "Marked as Leaver": len(leavers),
+            "Marked as Rehired": rehires,
+            "Deleted Employees": len(deleted),
+            "Failed Imports": failures_list,
+        }
+    )
+
+
+def new_employee(cp_employee: CPEmployee, employer_id: str) -> None:
+    new_employee_payload = cp_emp_to_staffology_emp(cp_employee)
+    created_staffology_employee = StaffologyAPI().employee_create(employer_id, new_employee_payload)
+    new_entry = Employee(
+        employer_id=employer_id,
+        crewplanner_id=cp_employee.id,
+        staffology_id=created_staffology_employee["id"],
+        status="ACTIVE",
+    )
+    new_entry.save()
+
+
+def mark_as_leaver(existing_ids: List[CPEmployee], employer_id: str) -> List:
     leavers = []
     for cp_employee in existing_ids:
         if cp_employee.status == "ARCHIVED" and Employee.objects.get(crewplanner_id=cp_employee.id).status == "ACTIVE":
@@ -66,13 +108,15 @@ def process_employees(employer_id: str) -> Response:  # pylint: disable=unused-a
     if len(leavers) > 0:
         StaffologyAPI().mark_leavers(employer_id, leavers)
         Employee.objects.filter(staffology_id__in=leavers).update(status="ARCHIVED")
+    return leavers
 
-    # rehire
+
+def mark_as_rehire(existing_ids: List[CPEmployee], employer_id: str) -> int:
     rehires = 0
     for cp_employee in existing_ids:
         if (
-            cp_employee.status != "ARCHIVED"
-            and Employee.objects.get(crewplanner_id=cp_employee.id).status == "ARCHIVED"
+                cp_employee.status != "ARCHIVED"
+                and Employee.objects.get(crewplanner_id=cp_employee.id).status == "ARCHIVED"
         ):
             rehire = Employee.objects.get(crewplanner_id=cp_employee.id).staffology_id
             rehired = StaffologyAPI().mark_rehires(employer_id, rehire)
@@ -80,32 +124,23 @@ def process_employees(employer_id: str) -> Response:  # pylint: disable=unused-a
             rehires += 1
         else:
             continue
+    return rehires
 
-    # delete
+
+def delete_employee(cp_employees: List[CPEmployee], employer_id: str) -> List:
     # update current employee list
     stored_cp_employee_ids = Employee.objects.filter(employer=employer_id).values_list("crewplanner_id", flat=True)
     # get list of stored employees not in cp
     id_list = [cp_employee.id for cp_employee in cp_employees]
     deleted = list(set(stored_cp_employee_ids).difference(id_list))
     to_delete = []
+    # delete them from staffology and database
     if len(deleted) > 0:
         for cp_id in deleted:
             to_delete.append(Employee.objects.get(crewplanner_id=cp_id).staffology_id)
         StaffologyAPI().delete_employees(employer_id, to_delete)
         Employee.objects.filter(crewplanner_id__in=to_delete).delete()
-
-    # update details
-    # TODO: update employee details - need to think of a way to efficently check for differences
-    # return totals
-    # TODO report errors in a way to display in ui and export
-    return Response(
-        {
-            "Employees Added": new_employee_count,
-            "Marked as Leaver": len(leavers),
-            "Marked as Rehired": rehires,
-            "Deleted Employees": len(to_delete),
-        }
-    )
+    return to_delete
 
 
 def format_address(name: str, number: str, street: str) -> str:

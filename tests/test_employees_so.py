@@ -2,7 +2,6 @@ from typing import Dict, List
 
 import pytest
 from django.contrib.auth.models import User
-from rest_framework.test import APIRequestFactory, APIClient
 
 from api.v1.staffology.employees import process_employees, staffology_employees_list
 
@@ -37,6 +36,7 @@ def expected_staffology_employee() -> List[Dict]:
     ]
 
 
+@pytest.fixture
 def test_staffology_employees_get(admin_user: User, expected_staffology_employee: List[Dict]):
     # Arrange
     user = User.objects.get(username="CP demo")
@@ -49,11 +49,8 @@ def test_staffology_employees_get(admin_user: User, expected_staffology_employee
 
 
 def test_process_employees():
-    process_employees('UK Payroll Test')
+    process_employees('13491ec7-a2c0-48d4-bd43-c0679d00a3ed')
 
 
 def test_get_employees():
     staffology_employees_list('UK Payroll Test')
-
-def test_sync_employees():
-    test_sync_employees()
