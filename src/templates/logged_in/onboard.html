@@ -1,0 +1,72 @@
+{% include "base/base_logged_in.html" %}
+
+<div style="display:flex;justify-content:center;align-items:center;width:100%;height:100%;">
+  <div style="width:50%;height:100%">
+<h1> Create New User </h1>
+
+    <div>
+        {% if user_exists %}
+      <div class="ui icon warning message">
+          <i class="exclamation icon"></i>
+      <div class="content">
+        <div class="header">
+          CrewPlanner User Already Connected!
+        </div>
+      </div>
+    </div>
+        {% elif user_created %}
+      <div class="ui icon positive message">
+          <i class="plus icon"></i>
+      <div class="content">
+        <div class="header">
+          CrewPlanner User Created!
+        </div>
+      </div>
+    </div>
+        {% endif %}
+    </div>
+
+    <form class="ui form" action="/user/create/" method="post">
+
+        <div class="field">
+            <input type="text" name="name" placeholder="Company name...">
+        </div>
+        <div class="field">
+            <input type="text" name="stub" placeholder="Stub...">
+        </div>
+        <div class="field">
+            <input type="text" name="crewplanner_key" placeholder="CrewPlanner API Key...">
+        </div>
+        <div class="field">
+            <label for="pay_period">Choose pay period:</label>
+            <select id="pay_period" name="pay_period">
+                <option value="Monthly">Monthly</option>
+                <option value="FourWeekly">Four Weekly</option>
+                <option value="Fortnightly">Fortnightly</option>
+                <option value="Weekly">Weekly</option>
+                <option value="Daily">Daily</option>
+            </select>
+        </div>
+        <div class="field">
+            <label for="tax_year">Choose the first tax year:</label>
+            <select id="tax_year" name="tax_year">
+                <option value="Year2023">2023</option>
+                <option value="Year2024">2024</option>
+                <option value="Year2025">2025</option>
+                <option value="Year2026">2026</option>
+                <option value="Year2027">2027</option>
+                <option value="Year2028">2028</option>
+                <option value="Year2029">2029</option>
+                <option value="Year2030">2030</option>
+            </select>
+        </div>
+        <div class="field">
+            <input type="text" name="period_end" placeholder="yyyy-mm-dd, first pay period end date"><br>
+        </div>
+        <div class="field">
+            <input type="text" name="payment_date" placeholder="yyyy-mm-dd, first payment date"><br>
+        </div>
+
+        {% csrf_token %}
+        <button class="ui blue button" type="submit">Add</button>
+    </form>

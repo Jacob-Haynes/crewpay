@@ -8,9 +8,9 @@ from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from api.v1.crewplanner.dto import CPEmployee
+from api.v1.crewplanner.dto_cp_employee import CPEmployee
 from api.v1.crewplanner.employees import crewplanner_employees_get
-from api.v1.staffology.dto import (
+from api.v1.staffology.dto_so_employee import (
     StaffologyAddress,
     StaffologyEmployee,
     StaffologyEmploymentDetails,

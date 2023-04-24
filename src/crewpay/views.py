@@ -11,6 +11,7 @@ from rest_framework.authtoken.models import Token
 from api.v1.staffology.employers import create_employer
 from crewpay.forms import EmployerForm
 from crewpay.models import CrewplannerUser, StaffologyUser, Employer
+from crewpay.settings import CREWPAY_VERSION
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
@@ -36,20 +37,12 @@ def root(request: WSGIRequest):
 
         return render(request, "not_logged_in/root.html", {"is_login_failed": failed})
 
-    if "staffology_connected_already" in request.GET:
-        context = {"staffology_connected_already": True}
-    elif "user_exists" in request.GET:
-        context = {"user_exists": True}
-    elif "user_created" in request.GET:
-        context = {"user_created": True}
-    elif "staffology_connected_success" in request.GET:
-        context = {"staffology_connected_success": True}
-    else:
-        context = {}
+    context = {}
 
-    form = EmployerForm()
-    form.fields['employer'].choices = get_employer_choices()
-    context['form'] = form
+    employer_selector = EmployerForm()
+    employer_selector.fields['employer'].choices = get_employer_choices()
+    context['employer_selector'] = employer_selector
+
     return render(request, "logged_in/root.html", context)
 
 
@@ -69,13 +62,40 @@ def logout_view(request):
 
 
 @login_required(login_url="/")
+def onboard(request):
+    if "user_exists" in request.GET:
+        context = {"user_exists": True}
+    elif "user_created" in request.GET:
+        context = {"user_created": True}
+    else:
+        context = {}
+
+    employer_selector = EmployerForm()
+    employer_selector.fields['employer'].choices = get_employer_choices()
+    context['employer_selector'] = employer_selector
+
+    return render(request, "logged_in/onboard.html", context)
+
+
+@login_required(login_url="/")
 def about(request):
-    return render(request, "logged_in/root.html")
+    return render(request, "logged_in/about.html", {'version': CREWPAY_VERSION})
 
 
 @login_required(login_url="/")
 def contact(request):
-    return render(request, "logged_in/root.html")
+    return render(request, "logged_in/contact.html")
+
+
+@login_required(login_url="/")
+def settings(request):
+    if "staffology_connected_already" in request.GET:
+        context = {"staffology_connected_already": True}
+    elif "staffology_connected_success" in request.GET:
+        context = {"staffology_connected_success": True}
+    else:
+        context = {}
+    return render(request, "logged_in/settings.html", context)
 
 
 @login_required(login_url="/")
@@ -87,18 +107,18 @@ def token(request):
 @user_passes_test(lambda u: u.is_superuser)
 def create_user(request):
     try:
-        CrewplannerUser.objects.get(stub=request.POST["stub"])
-        return redirect("/?user_exists=true")
-    except CrewplannerUser.DoesNotExist:
+        User.objects.get(username=request.POST["name"])
+        return redirect("/onboard?user_exists=true")
+    except User.DoesNotExist:
         new_user = User(username=request.POST["name"], password=User.objects.make_random_password())
         new_cp_user = CrewplannerUser(
             user=new_user, access_key=request.POST["crewplanner_key"], stub=request.POST["stub"]
         )
         new_user.save()
         new_cp_user.save()
-        access_key = StaffologyUser.objects.get(user=request.user).staffology_key
-        create_employer(new_user, access_key)
-        return redirect("/?user_created=true")
+        create_employer(new_user, request.POST["pay_period"], request.POST["tax_year"], request.POST["period_end"],
+                        request.POST["payment_date"])
+        return redirect("/onboard?user_created=true")
 
 
 @user_passes_test(lambda u: u.is_superuser)

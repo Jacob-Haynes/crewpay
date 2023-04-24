@@ -7,7 +7,7 @@ from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from api.v1.crewplanner.dto import CPEmployee
+from api.v1.crewplanner.dto_cp_employee import CPEmployee
 from crewpay.models import CrewplannerUser, InvalidEmployee, Employer
 
 
@@ -28,7 +28,21 @@ def crewplanner_employees_get(stub: str, access_token: str) -> List[CPEmployee]:
     )
     if not response.ok:
         raise ValueError(response.json())
-    return [validate_employee(stub, employee) for employee in response.json()["data"]]
+    results = response.json()["data"]
+    cursor = response.json()["meta"]["next_cursor"]
+
+    while cursor is not None:
+        response = requests.get(
+            f"https://{stub}.crewplanner.com/api/v1/client/employees?filter[status]=verified"
+            f"&filter[contract_type]=VSA&filter[contract_type]=EMP&filter[payrolling]=no&cursor={cursor}",
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
+        if not response.ok:
+            raise ValueError(response.json())
+        results += response.json()["data"]
+        cursor = response.json()["meta"]["next_cursor"]
+
+    return [validate_employee(stub, employee) for employee in results]
 
 
 def validate_employee(stub: str, employee: Dict) -> Optional[CPEmployee]:

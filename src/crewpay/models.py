@@ -33,6 +33,7 @@ class Employer(models.Model):
         help_text="staffology employer ID",
         max_length=500,
     )
+    pay_period = models.CharField(max_length=20, default='Monthly')
 
 
 class Employee(models.Model):

@@ -22,6 +22,8 @@ from crewpay import views
 urlpatterns = [
     path("admin/", admin.site.urls, name="admin"),
     path("", views.root, name="root"),
+    path("onboard", views.onboard, name="onboard"),
+    path("settings", views.settings, name="settings"),
     path("about", views.about, name="about"),
     path("contact", views.contact, name="contact"),
     path("token", views.token, name="token"),
