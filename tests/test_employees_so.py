@@ -4,6 +4,7 @@ import pytest
 from django.contrib.auth.models import User
 
 from api.v1.staffology.employees import process_employees, staffology_employees_list
+from crewpay.models import Employer
 
 
 @pytest.fixture
@@ -49,7 +50,8 @@ def test_staffology_employees_get(admin_user: User, expected_staffology_employee
 
 
 def test_process_employees():
-    process_employees('13491ec7-a2c0-48d4-bd43-c0679d00a3ed')
+    employer = Employer.objects.get(user__username="UK Payroll Test").id
+    process_employees(employer)
 
 
 def test_get_employees():

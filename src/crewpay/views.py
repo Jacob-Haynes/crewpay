@@ -95,6 +95,10 @@ def settings(request):
         context = {"staffology_connected_success": True}
     else:
         context = {}
+
+    employer_selector = EmployerForm()
+    employer_selector.fields['employer'].choices = get_employer_choices()
+    context['employer_selector'] = employer_selector
     return render(request, "logged_in/settings.html", context)
 
 
@@ -130,3 +134,4 @@ def create_staffology_user(request):
         new_staffology_user = StaffologyUser(user=request.user, staffology_key=request.POST["staffology_key"])
         new_staffology_user.save()
         return redirect("/?staffology_connected_success=true")
+

@@ -1,26 +1,29 @@
+from typing import Optional, Dict, List
+
 import requests
 from django.contrib.auth.decorators import user_passes_test
+from pydantic import ValidationError
 from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from api.v1.staffology.employers import next_pay_run, StaffologyAPI, open_schedules, active_schedules
-from crewpay.models import CrewplannerUser
+from api.v1.crewplanner.dto_cp_shift import CPShift
+from crewpay.models import CrewplannerUser, Employer, InvalidShift
 
 
 @api_view(["GET"])
 @user_passes_test(lambda u: u.is_superuser)
 def report_get(request: Request) -> Response:  # pylint: disable=unused-argument
-    stub = request.query_params["stub"]
+    employer = request.query_params["employer"]
+    user = Employer.objects.get(id=employer).user
     start_date = request.query_params["start_date"]
     end_date = request.query_params["end_date"]
-    access_token = CrewplannerUser.objects.get(stub=stub).access_key
-    return crewplanner_report_get(stub, access_token, start_date, end_date)
+    access_token = CrewplannerUser.objects.get(user=user).access_key
+    stub = CrewplannerUser.objects.get(user=user).stub
+    return Response(crewplanner_report_get(stub, access_token, start_date, end_date))
 
 
-# TODO: do we need FPT as well?
-
-def crewplanner_report_get(stub: str, access_token: str, start_date: str, end_date: str) -> Response:
+def crewplanner_report_get(stub: str, access_token: str, start_date: str, end_date: str) -> List[Dict]:
     response = requests.get(
         f"https://{stub}.crewplanner.com/api/v1/client/report?filter[after]={start_date}&filter[before]={end_date}"
         f"&filter[include_external_workers]=false&filter[contract_types]=VSA,EMP",
@@ -42,36 +45,30 @@ def crewplanner_report_get(stub: str, access_token: str, start_date: str, end_da
         results += response.json()["data"]
         cursor = response.json()["meta"]["next_cursor"]
 
-    return Response(results)
-
-def run_payroll(employer, tax_year):
-    # create missing pay runs
-    schedules_to_run = open_schedules(employer, tax_year)
-    for schedule_to_run in schedules_to_run:
-        # activate the pay runs
-        pay_run = next_pay_run(employer, schedule_to_run)
-        StaffologyAPI().start_next_payrun(employer, tax_year, pay_run["payPeriod"])
-    # process pay runs
-    schedules_to_process = active_schedules(employer, tax_year)
-    for schedule_to_process in schedules_to_process:
-        # get the pay run
-        pay_run = next_pay_run(employer, schedule_to_process)
-        # get the cp report for the pay period
-        # group by employee
-        # create paylines for each employee
-        # update payrun
+    return results
 
 
-# TODO: Payoptions and payruns
+def create_shift_lines(user, start_date: str, end_date: str) -> List[Optional[CPShift]]:
+    employer = Employer.objects.get(user=user).id
+    stub = CrewplannerUser.objects.get(user=user).stub
+    access_key = CrewplannerUser.objects.get(user=user).access_key
+    cp_report = crewplanner_report_get(stub, access_key, start_date, end_date)
+    shift_lines = [validate_shift_line(employer, shift) for shift in cp_report]
+    return shift_lines
 
 
-# def create_pay_line:
-#     # https://app.staffology.co.uk/api/docs/guides/gettingstarted/payoptions
-#     # "regularPayLines": [
-#     #     {
-#     #         "value": 50.0,
-#     #         "description": "Performance bonus for October",
-#     #         "code": "BONUS"
-#     #     }
-#     # ],
-#     return
+def validate_shift_line(employer: str, shift: Dict) -> Optional[CPShift]:
+    try:
+        cp_shift = CPShift(**shift)
+        return cp_shift
+    except ValidationError as e:
+        error = str(e)
+        project = f"{shift['project']['id']}, {shift['project']['name']}"
+        employee = f"{shift['worker']['id']}, {shift['worker']['name']}"
+        invalid_shift = InvalidShift(
+            project=project,
+            employee=employee,
+            error=error,
+            employer=Employer.objects.get(id=employer),
+        )
+        invalid_shift.save()

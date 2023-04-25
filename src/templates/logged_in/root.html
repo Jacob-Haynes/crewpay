@@ -8,7 +8,7 @@
 
       <h1> Sync Employees </h1>
 
-      <form class="ui form" action="/api/v1/staffology/employees" method="get">
+      <form class="ui form" action="/api/v1/staffology/sync_employees" method="get">
         <div class="field">
             {{ employer_selector }}
         </div>
@@ -20,7 +20,7 @@
 
       <h1> Run Payroll </h1>
 
-      <form class="ui form" action="/api/v1/crewplanner/report" method="get">
+      <form class="ui form" action="/api/v1/staffology/payruns" method="get">
           <div class="field">
             {{ employer_selector }}
           </div>

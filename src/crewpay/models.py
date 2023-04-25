@@ -49,3 +49,14 @@ class InvalidEmployee(models.Model):
     error = models.TextField()
     date_time = models.DateTimeField(auto_now_add=True)
     employer = models.ForeignKey(Employer, related_name="invalid_employees", on_delete=models.CASCADE)
+
+
+class InvalidShift(models.Model):
+    project = models.CharField(max_length=100)
+    employee = models.CharField(max_length=100)
+    error = models.TextField()
+    date_time = models.DateTimeField(auto_now_add=True)
+    employer = models.ForeignKey(Employer, related_name="invalid_shifts", on_delete=models.CASCADE)
+
+
+

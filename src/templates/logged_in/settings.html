@@ -11,7 +11,7 @@
     <h1> Get Crewplanner employees </h1>
     <form class="ui form" action="/api/v1/crewplanner/employees/" method="get">
         <div class="field">
-            <input type="text" name="stub" placeholder="Stub..."><br>
+            {{ employer_selector}}
         </div>
         {% csrf_token %}
         <button class="ui blue button" type="submit">Get</button>
@@ -21,14 +21,14 @@
     <h1> Get Crewplanner report </h1>
     <form class="ui form" action="/api/v1/crewplanner/report/" method="get">
         <div class="field">
-            <input type="text" name="stub" placeholder="Stub..."><br>
+            {{ employer_selector}}
         </div>
-        <br>
         <div class="field">
+            <label for="start_date">Start date:</label>
             <input type="text" name="start_date" placeholder="yyyy-mm-dd"><br>
         </div>
-        <br>
         <div class="field">
+            <label for="end_date">End date:</label>
             <input type="text" name="end_date" placeholder="yyyy-mm-dd"><br>
         </div>
         {% csrf_token %}

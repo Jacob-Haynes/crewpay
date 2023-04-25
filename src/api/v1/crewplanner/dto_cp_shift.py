@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from typing import List, Optional
 
@@ -89,26 +89,26 @@ class Registered(BaseModel):
     start: str
     end: str
     gross_minutes: int
-    break_: Optional[int]
+    break_: Optional[int] = Field(alias="break")
     netto_minutes: int
 
 
 class Timesheet(BaseModel):
     planned: Planned
-    clocked: Clocked
+    clocked: Optional[Clocked]
     registered: Registered
 
 
 class Wage(BaseModel):
-    type_: str
+    type_: str = Field(alias="type")
     value: float
     day_rate_max_hours: Optional[int]
-    total: Optional[float]
+    total: float
 
 
 class Cost(BaseModel):
-    type_: str
-    value: float
+    type_: Optional[str] = Field(alias="type")
+    value: Optional[float]
     day_rate_max_hours: Optional[int]
     total: Optional[float]
 
@@ -118,7 +118,7 @@ class Payout(BaseModel):
     advance: Optional[float]
 
 
-class CPReport(BaseModel):
+class CPShift(BaseModel):
     id: int
     project: dict
     slot: Slot
