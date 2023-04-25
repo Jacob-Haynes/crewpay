@@ -17,7 +17,13 @@ from api.v1.staffology.dto_so_employee import (
     StaffologyPersonalDetails,
     StaffologyStarterDetails,
 )
-from crewpay.models import CrewplannerUser, Employee, Employer, StaffologyUser, InvalidEmployee
+from crewpay.models import (
+    CrewplannerUser,
+    Employee,
+    Employer,
+    InvalidEmployee,
+    StaffologyUser,
+)
 
 
 @api_view(["GET"])
@@ -64,14 +70,14 @@ def process_employees(employer_id: str) -> Response:  # pylint: disable=unused-a
     # update details
     # TODO: update employee details - need to think of a way to efficently check for differences
     # return totals
-    failures = InvalidEmployee.objects.filter(employer=employer_id).order_by('date_time')[:failed_employees]
+    failures = InvalidEmployee.objects.filter(employer=employer_id).order_by("date_time")[:failed_employees]
     failures_list = []
     for failure in failures:
         failure_dict = {
-            'employee_id': failure.employee_id,
-            'name': failure.name,
-            'error': failure.error,
-            'date_time': failure.date_time,
+            "employee_id": failure.employee_id,
+            "name": failure.name,
+            "error": failure.error,
+            "date_time": failure.date_time,
         }
         failures_list.append(failure_dict)
     return Response(
@@ -115,8 +121,8 @@ def mark_as_rehire(existing_ids: List[CPEmployee], employer_id: str) -> int:
     rehires = 0
     for cp_employee in existing_ids:
         if (
-                cp_employee.status != "ARCHIVED"
-                and Employee.objects.get(crewplanner_id=cp_employee.id).status == "ARCHIVED"
+            cp_employee.status != "ARCHIVED"
+            and Employee.objects.get(crewplanner_id=cp_employee.id).status == "ARCHIVED"
         ):
             rehire = Employee.objects.get(crewplanner_id=cp_employee.id).staffology_id
             rehired = StaffologyAPI().mark_rehires(employer_id, rehire)

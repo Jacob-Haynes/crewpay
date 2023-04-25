@@ -1,4 +1,4 @@
-from typing import Optional, Dict, List
+from typing import Dict, List, Optional
 
 import requests
 from django.contrib.auth.decorators import user_passes_test

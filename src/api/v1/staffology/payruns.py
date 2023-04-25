@@ -49,8 +49,6 @@ def run_payroll(request: Request):
     # update payrun
 
 
-
-
 # def create_pay_line:
 #     # https://app.staffology.co.uk/api/docs/guides/gettingstarted/payoptions
 #     # "regularPayLines": [

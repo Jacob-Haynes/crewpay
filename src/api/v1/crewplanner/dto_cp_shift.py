@@ -2,10 +2,6 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
-from typing import List, Optional
-
-from pydantic import BaseModel
-
 
 class CustomFields(BaseModel):
     open_field: Optional[str]

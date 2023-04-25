@@ -10,7 +10,7 @@ from rest_framework.authtoken.models import Token
 
 from api.v1.staffology.employers import create_employer
 from crewpay.forms import EmployerForm
-from crewpay.models import CrewplannerUser, StaffologyUser, Employer
+from crewpay.models import CrewplannerUser, Employer, StaffologyUser
 from crewpay.settings import CREWPAY_VERSION
 
 
@@ -40,8 +40,8 @@ def root(request: WSGIRequest):
     context = {}
 
     employer_selector = EmployerForm()
-    employer_selector.fields['employer'].choices = get_employer_choices()
-    context['employer_selector'] = employer_selector
+    employer_selector.fields["employer"].choices = get_employer_choices()
+    context["employer_selector"] = employer_selector
 
     return render(request, "logged_in/root.html", context)
 
@@ -71,15 +71,15 @@ def onboard(request):
         context = {}
 
     employer_selector = EmployerForm()
-    employer_selector.fields['employer'].choices = get_employer_choices()
-    context['employer_selector'] = employer_selector
+    employer_selector.fields["employer"].choices = get_employer_choices()
+    context["employer_selector"] = employer_selector
 
     return render(request, "logged_in/onboard.html", context)
 
 
 @login_required(login_url="/")
 def about(request):
-    return render(request, "logged_in/about.html", {'version': CREWPAY_VERSION})
+    return render(request, "logged_in/about.html", {"version": CREWPAY_VERSION})
 
 
 @login_required(login_url="/")
@@ -97,8 +97,8 @@ def settings(request):
         context = {}
 
     employer_selector = EmployerForm()
-    employer_selector.fields['employer'].choices = get_employer_choices()
-    context['employer_selector'] = employer_selector
+    employer_selector.fields["employer"].choices = get_employer_choices()
+    context["employer_selector"] = employer_selector
     return render(request, "logged_in/settings.html", context)
 
 
@@ -120,8 +120,13 @@ def create_user(request):
         )
         new_user.save()
         new_cp_user.save()
-        create_employer(new_user, request.POST["pay_period"], request.POST["tax_year"], request.POST["period_end"],
-                        request.POST["payment_date"])
+        create_employer(
+            new_user,
+            request.POST["pay_period"],
+            request.POST["tax_year"],
+            request.POST["period_end"],
+            request.POST["payment_date"],
+        )
         return redirect("/onboard?user_created=true")
 
 
@@ -134,4 +139,3 @@ def create_staffology_user(request):
         new_staffology_user = StaffologyUser(user=request.user, staffology_key=request.POST["staffology_key"])
         new_staffology_user.save()
         return redirect("/?staffology_connected_success=true")
-

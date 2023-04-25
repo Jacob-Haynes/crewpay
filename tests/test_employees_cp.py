@@ -5,6 +5,7 @@ import pytest
 
 from api.v1.crewplanner.employees import validate_employee
 
+
 @pytest.fixture
 def data_path() -> Path:
     return Path(__file__).parent / "data"

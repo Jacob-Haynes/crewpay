@@ -1,4 +1,4 @@
-from typing import List, Dict, Optional
+from typing import Dict, List, Optional
 
 import requests
 from django.contrib.auth.decorators import user_passes_test
@@ -8,7 +8,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from api.v1.crewplanner.dto_cp_employee import CPEmployee
-from crewpay.models import CrewplannerUser, InvalidEmployee, Employer
+from crewpay.models import CrewplannerUser, Employer, InvalidEmployee
 
 
 @api_view(["GET"])
@@ -35,7 +35,7 @@ def validate_employee(stub: str, employee: Dict) -> Optional[CPEmployee]:
         error = str(e)
         name = f"{employee['first_name']} {employee['last_name']}"
         invalid_employee = InvalidEmployee(
-            employee_id=employee['id'],
+            employee_id=employee["id"],
             name=name,
             error=error,
             employer=Employer.objects.get(user__crewplanner_user__stub=stub),

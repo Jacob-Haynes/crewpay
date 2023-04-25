@@ -33,7 +33,7 @@ class Employer(models.Model):
         help_text="staffology employer ID",
         max_length=500,
     )
-    pay_period = models.CharField(max_length=20, default='Monthly')
+    pay_period = models.CharField(max_length=20, default="Monthly")
 
 
 class Employee(models.Model):
@@ -57,6 +57,3 @@ class InvalidShift(models.Model):
     error = models.TextField()
     date_time = models.DateTimeField(auto_now_add=True)
     employer = models.ForeignKey(Employer, related_name="invalid_shifts", on_delete=models.CASCADE)
-
-
-

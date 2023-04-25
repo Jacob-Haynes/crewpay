@@ -1,5 +1,5 @@
 import json
-from typing import Optional, Dict, List
+from typing import Dict, List, Optional
 
 import requests
 from django.contrib.auth.decorators import user_passes_test
@@ -22,11 +22,10 @@ def employers_get(request: Request) -> Response:  # pylint: disable=unused-argum
     return Response(response.json())
 
 
-def create_employer(user: User, pay_period: str, tax_year: str, period_end: str,
-                    payment_date: str) -> None:  # pylint: disable=unused-argument
-    payload = {"name": user.username,
-               "defaultPayOptions": {
-                   "payPeriod": pay_period}}
+def create_employer(
+    user: User, pay_period: str, tax_year: str, period_end: str, payment_date: str
+) -> None:  # pylint: disable=unused-argument
+    payload = {"name": user.username, "defaultPayOptions": {"payPeriod": pay_period}}
     employer_data = StaffologyAPI().create_employer(payload)
     schedule(employer_data["id"], pay_period, tax_year, period_end, payment_date)
     employer = Employer(user=user, id=employer_data["id"], pay_period=pay_period)
@@ -35,12 +34,7 @@ def create_employer(user: User, pay_period: str, tax_year: str, period_end: str,
 
 def schedule(employer: str, pay_period: str, tax_year: str, period_end: str, payment_date: str) -> None:
     payload = {"firstPeriodEndDate": period_end, "firstPaymentDate": payment_date}
-    StaffologyAPI().update_pay_schedule(
-        employer=employer,
-        tax_year=tax_year,
-        pay_period=pay_period,
-        payload=payload
-    )
+    StaffologyAPI().update_pay_schedule(employer=employer, tax_year=tax_year, pay_period=pay_period, payload=payload)
 
 
 def activate_payruns(schedule_to_run: Dict, employer: str, tax_year: str, pay_period: str) -> Dict:
@@ -100,9 +94,7 @@ class StaffologyAPI:
         return response
 
     def delete(self, endpoint: str, params: Optional[Dict] = None) -> requests.Response:
-        response = requests.delete(
-            f"{self.base_url}{endpoint}", auth=self.auth, headers=self.headers, params=params
-        )
+        response = requests.delete(f"{self.base_url}{endpoint}", auth=self.auth, headers=self.headers, params=params)
         if not response.ok:
             raise ValueError(response.text)
         return response
