@@ -14,20 +14,24 @@ from crewpay.models import CrewplannerUser, Employer, InvalidEmployee
 @api_view(["GET"])
 @user_passes_test(lambda u: u.is_superuser)
 def employees_get(request: Request) -> Response:  # pylint: disable=unused-argument
+    """Lists CrewPlanner employees for a given employer. This is used by admin users for problem-solving."""
     employer = request.query_params["employer"]
     user = Employer.objects.get(id=employer).user
     stub = CrewplannerUser.objects.get(user=user).stub
     access_token = CrewplannerUser.objects.get(user=user).access_key
-    results = api_get_employees(stub, access_token)
+    results = api_get_cp_employees(stub, access_token)
     return Response(results)
 
 
 def crewplanner_employees_get(stub: str, access_token: str) -> List[CPEmployee]:  # pylint: disable=unused-argument
-    results = api_get_employees(stub, access_token)
+    """Get all and validating CrewPlanner employees."""
+    results = api_get_cp_employees(stub, access_token)
     return [validate_employee(stub, employee) for employee in results]
 
 
 def validate_employee(stub: str, employee: Dict) -> Optional[CPEmployee]:
+    """Validates a CrewPlanner employee by checking for missing required fields. Saves the invalid employee creation
+    attempt to the DB with the reason for failure."""
     try:
         cp_employee = CPEmployee(**employee)
         return cp_employee
@@ -43,7 +47,8 @@ def validate_employee(stub: str, employee: Dict) -> Optional[CPEmployee]:
         invalid_employee.save()
 
 
-def api_get_employees(stub: str, access_token: str) -> List[Dict]:  # pylint: disable=unused-argument
+def api_get_cp_employees(stub: str, access_token: str) -> List[Dict]:  # pylint: disable=unused-argument
+    """Gets employees from the CrewPlanner API."""
     response = requests.get(
         f"https://{stub}.crewplanner.com/api/v1/client/employees?filter[status]=verified"
         f"&filter[contract_type]=VSA&filter[contract_type]=EMP&filter[payrolling]=no",

@@ -29,10 +29,13 @@ from crewpay.models import (
 @api_view(["GET"])
 @user_passes_test(lambda u: u.is_superuser)
 def sync_employees(request: Request) -> Response:  # pylint: disable=unused-argument
+    """UI function to sync employees from crewplanner to staffology"""
     return process_employees(request.GET["employer"])
 
 
 def process_employees(employer_id: str) -> Response:  # pylint: disable=unused-argument
+    """Main function to process employees. Firstly gets employees from CP. Then validates and creates new employees.
+    Also marks leavers, rehires, and deletes employees. Finally, records failed employee imports in the database."""
     user = Employer.objects.get(id=employer_id).user
     access_token = CrewplannerUser.objects.get(user=user).access_key
     stub = CrewplannerUser.objects.get(user=user).stub
@@ -93,8 +96,9 @@ def process_employees(employer_id: str) -> Response:  # pylint: disable=unused-a
 
 
 def new_employee(cp_employee: CPEmployee, employer_id: str) -> None:
+    """creates a new employee in staffology and the database"""
     new_employee_payload = cp_emp_to_staffology_emp(cp_employee)
-    created_staffology_employee = StaffologyAPI().employee_create(employer_id, new_employee_payload)
+    created_staffology_employee = StaffologyEmployeeAPI().employee_create(employer_id, new_employee_payload)
     new_entry = Employee(
         employer_id=employer_id,
         crewplanner_id=cp_employee.id,
@@ -105,6 +109,7 @@ def new_employee(cp_employee: CPEmployee, employer_id: str) -> None:
 
 
 def mark_as_leaver(existing_ids: List[CPEmployee], employer_id: str) -> List:
+    """Marks archived cp employees as leavers"""
     leavers = []
     for cp_employee in existing_ids:
         if cp_employee.status == "ARCHIVED" and Employee.objects.get(crewplanner_id=cp_employee.id).status == "ACTIVE":
@@ -112,12 +117,13 @@ def mark_as_leaver(existing_ids: List[CPEmployee], employer_id: str) -> List:
         else:
             continue
     if len(leavers) > 0:
-        StaffologyAPI().mark_leavers(employer_id, leavers)
+        StaffologyEmployeeAPI().mark_leavers(employer_id, leavers)
         Employee.objects.filter(staffology_id__in=leavers).update(status="ARCHIVED")
     return leavers
 
 
 def mark_as_rehire(existing_ids: List[CPEmployee], employer_id: str) -> int:
+    """Marks un-archived cp employees as rehires"""
     rehires = 0
     for cp_employee in existing_ids:
         if (
@@ -125,7 +131,7 @@ def mark_as_rehire(existing_ids: List[CPEmployee], employer_id: str) -> int:
             and Employee.objects.get(crewplanner_id=cp_employee.id).status == "ARCHIVED"
         ):
             rehire = Employee.objects.get(crewplanner_id=cp_employee.id).staffology_id
-            rehired = StaffologyAPI().mark_rehires(employer_id, rehire)
+            rehired = StaffologyEmployeeAPI().mark_rehires(employer_id, rehire)
             Employee.objects.filter(crewplanner_id=cp_employee.id).update(status="ACTIVE", staffology_id=rehired["id"])
             rehires += 1
         else:
@@ -134,6 +140,7 @@ def mark_as_rehire(existing_ids: List[CPEmployee], employer_id: str) -> int:
 
 
 def delete_employee(cp_employees: List[CPEmployee], employer_id: str) -> List:
+    """Deletes non-existent cp employees from staffology and the db"""
     # update current employee list
     stored_cp_employee_ids = Employee.objects.filter(employer=employer_id).values_list("crewplanner_id", flat=True)
     # get list of stored employees not in cp
@@ -144,16 +151,18 @@ def delete_employee(cp_employees: List[CPEmployee], employer_id: str) -> List:
     if len(deleted) > 0:
         for cp_id in deleted:
             to_delete.append(Employee.objects.get(crewplanner_id=cp_id).staffology_id)
-        StaffologyAPI().delete_employees(employer_id, to_delete)
+        StaffologyEmployeeAPI().delete_employees(employer_id, to_delete)
         Employee.objects.filter(crewplanner_id__in=to_delete).delete()
     return to_delete
 
 
 def format_address(name: str, number: str, street: str) -> str:
+    """Formats a cp address into a staffology address"""
     return " ".join([item for item in [name, number, street] if item is not None])
 
 
 def cp_emp_to_staffology_emp(cp_emp: CPEmployee) -> StaffologyEmployee:
+    """Converts a cp employee to a staffology employee data structure"""
     return StaffologyEmployee(
         personalDetails=StaffologyPersonalDetails(
             title="",
@@ -183,13 +192,9 @@ def cp_emp_to_staffology_emp(cp_emp: CPEmployee) -> StaffologyEmployee:
     )
 
 
-def staffology_employees_list(username: str) -> List[Dict]:
-    employer_id = Employer.objects.get(user__username=username).id
-    staff_list = StaffologyAPI().staffology_employees_get(employer_id)
-    return staff_list
+class StaffologyEmployeeAPI:
+    """Handles all staffology employee api calls"""
 
-
-class StaffologyAPI:
     def __init__(self, admin_user: str = "admin"):
         self.base_url = "https://api.staffology.co.uk/"
         self.admin_user = admin_user
@@ -229,10 +234,10 @@ class StaffologyAPI:
     def employee_create(self, employer: str, employee: StaffologyEmployee) -> Dict:
         return self.post(f"employers/{employer}/employees", data=employee.json()).json()
 
-    def mark_leavers(self, employer: str, employees: List[str]) -> Dict:
+    def mark_leavers(self, employer: str, employees: List[str]) -> None:
         now = datetime.date.today()
         params = {"date": now.strftime("%Y-%m-%d"), "emailP45": json.dumps(False)}
-        return self.put(f"employers/{employer}/employees/leavers", data=json.dumps(employees), params=params).text
+        self.put(f"employers/{employer}/employees/leavers", data=json.dumps(employees), params=params)
 
     def mark_rehires(self, employer: str, employee: str) -> Dict:
         return self.get(f"/employers/{employer}/employees/{employee}/rehire").json()

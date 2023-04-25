@@ -21,6 +21,7 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 
 
 def get_employer_choices():
+    """Used for populating the employer selector dropdown."""
     employers = Employer.objects.all()
     result = tuple([(0, "")] + [(employer.id, employer.user) for employer in employers])
     return result
