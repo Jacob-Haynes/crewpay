@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 import requests
 from django.contrib.auth.decorators import user_passes_test
@@ -50,14 +50,15 @@ def api_get_cp_report(stub: str, access_token: str, start_date: str, end_date: s
     return results
 
 
-def create_shift_lines(user, start_date: str, end_date: str) -> List[Optional[CPShift]]:
+def create_shift_lines(user, start_date: str, end_date: str) -> Tuple[List[Optional[CPShift]], int]:
     """Gets a CP report and creates a list of CPShift objects."""
     employer = Employer.objects.get(user=user).id
     stub = CrewplannerUser.objects.get(user=user).stub
     access_key = CrewplannerUser.objects.get(user=user).access_key
     cp_report = api_get_cp_report(stub, access_key, start_date, end_date)
     shift_lines = [validate_shift_line(employer, shift) for shift in cp_report]
-    return shift_lines
+    failures = len(cp_report) - len(shift_lines)
+    return shift_lines, failures
 
 
 def validate_shift_line(employer: str, shift: Dict) -> Optional[CPShift]:

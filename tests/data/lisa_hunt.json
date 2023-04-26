@@ -1,0 +1,802 @@
+{
+    "data": [
+      {
+        "id": 6646,
+        "first_name": "Lisa",
+        "last_name": "Hunt",
+        "phone_number": null,
+        "email": "ftworker2@yopmail.com",
+        "profile_picture_url": "https://s3.eu-west-1.amazonaws.com/public.crewplanner.production/profile-pictures/3090/conversions/1c092f139b0a8e1063edb9c698a5b83e-small.jpg",
+        "role": "employee",
+        "status": "ACTIVE",
+        "civil_status": null,
+        "registration_numbers": {
+          "nino": ""
+        },
+        "contingent": [],
+        "payrolling": null,
+        "contract": {
+          "code": "EMP",
+          "name": "Full-time or part-time",
+          "visa_type": null,
+          "visa_expiration_date": null,
+          "contract_hours_per_week": 40,
+          "contract_days_per_week": null,
+          "contract_start_date": null,
+          "contract_end_date": null,
+          "contract_min_hours_per_week": null,
+          "contract_max_hours_per_week": null,
+          "contract_min_hours_per_month": null,
+          "contract_hours_unlimited_from": null,
+          "contract_hours_unlimited_to": null
+        },
+        "work_permit_date": null,
+        "gender": "FEMALE",
+        "date_of_birth": "1986-03-21",
+        "place_of_birth": "hunts",
+        "birth_name": null,
+        "country_of_birth": null,
+        "employee_number": "401",
+        "departments": [
+          {
+            "id": 419,
+            "name": "Admin",
+            "full_name": "HQ - Admin",
+            "color": null,
+            "requires_availability": true
+          },
+          {
+            "id": 421,
+            "name": "Waiters",
+            "full_name": "South East - Waiters",
+            "color": "#b2b2b2",
+            "requires_availability": true
+          },
+          {
+            "id": 573,
+            "name": "Hospitality",
+            "full_name": "South East - Hospitality",
+            "color": "#7bf0bf",
+            "requires_availability": true
+          },
+          {
+            "id": 574,
+            "name": "Bars",
+            "full_name": "South East - Bars",
+            "color": "#6ea6df",
+            "requires_availability": false
+          },
+          {
+            "id": 621,
+            "name": "Entrance A",
+            "full_name": "Sporting - Entrance A",
+            "color": "#f6ff03",
+            "requires_availability": true
+          },
+          {
+            "id": 1329,
+            "name": "Security",
+            "full_name": "South East - Security",
+            "color": "#b60909",
+            "requires_availability": true
+          },
+          {
+            "id": 584,
+            "name": "Packers",
+            "full_name": "Oxford - Packers",
+            "color": "#00fb58",
+            "requires_availability": true
+          },
+          {
+            "id": 575,
+            "name": "Pickers",
+            "full_name": "Oxford - Pickers",
+            "color": "#f39203",
+            "requires_availability": true
+          },
+          {
+            "id": 2484,
+            "name": "Warehouse workers",
+            "full_name": "Oxford - Warehouse workers",
+            "color": "#4d00ef",
+            "requires_availability": true
+          },
+          {
+            "id": 577,
+            "name": "Bar Staff",
+            "full_name": "Sporting - Bar Staff",
+            "color": "#f20000",
+            "requires_availability": true
+          },
+          {
+            "id": 2769,
+            "name": "Stewards",
+            "full_name": "Sporting - Stewards",
+            "color": "#f705dd",
+            "requires_availability": true
+          },
+          {
+            "id": 2775,
+            "name": "Security",
+            "full_name": "Midlands - Security",
+            "color": "#03d7ff",
+            "requires_availability": true
+          }
+        ],
+        "ratings": {
+          "average_rating": 4,
+          "data": [
+            {
+              "id": 3924,
+              "value": 4,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 3927,
+              "value": 5,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 3931,
+              "value": 3,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 3944,
+              "value": 4,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 3948,
+              "value": 5,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 3965,
+              "value": 2,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 3970,
+              "value": 3,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 4047,
+              "value": 5,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 4049,
+              "value": 5,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 4056,
+              "value": 4,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 4061,
+              "value": 3,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 4077,
+              "value": 4,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 4083,
+              "value": 4,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 4087,
+              "value": 4,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 4090,
+              "value": 4,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6640,
+                "name": "Demo CrewPlanner"
+              }
+            },
+            {
+              "id": 4140,
+              "value": 3,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 4159,
+              "value": 3,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 4168,
+              "value": 3,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6640,
+                "name": "Demo CrewPlanner"
+              }
+            },
+            {
+              "id": 5159,
+              "value": 4,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 5190,
+              "value": 4,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6640,
+                "name": "Demo CrewPlanner"
+              }
+            },
+            {
+              "id": 5207,
+              "value": 4,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6640,
+                "name": "Demo CrewPlanner"
+              }
+            },
+            {
+              "id": 5244,
+              "value": 5,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6640,
+                "name": "Demo CrewPlanner"
+              }
+            },
+            {
+              "id": 5247,
+              "value": 4,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6640,
+                "name": "Demo CrewPlanner"
+              }
+            },
+            {
+              "id": 5251,
+              "value": 5,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6640,
+                "name": "Demo CrewPlanner"
+              }
+            },
+            {
+              "id": 5255,
+              "value": 4,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6640,
+                "name": "Demo CrewPlanner"
+              }
+            },
+            {
+              "id": 5275,
+              "value": 5,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6640,
+                "name": "Demo CrewPlanner"
+              }
+            },
+            {
+              "id": 5551,
+              "value": 5,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 5566,
+              "value": 5,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 5582,
+              "value": 3,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 5610,
+              "value": 5,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 5638,
+              "value": 5,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 6859,
+              "value": 5,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 6864,
+              "value": 5,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 6902,
+              "value": 4,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 7036,
+              "value": 5,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 7038,
+              "value": 3,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 7044,
+              "value": 3,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 7085,
+              "value": 5,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 7129,
+              "value": 4,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 7155,
+              "value": 5,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 7160,
+              "value": 3,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 7231,
+              "value": 5,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 7233,
+              "value": 5,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 7239,
+              "value": 3,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 7307,
+              "value": 4,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 7655,
+              "value": 5,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 7660,
+              "value": 3,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6508,
+                "name": "Jacob Haynes"
+              }
+            },
+            {
+              "id": 35997,
+              "value": 4,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 12354,
+                "name": "Tim George"
+              }
+            },
+            {
+              "id": 37693,
+              "value": 3,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6640,
+                "name": "Demo CrewPlanner"
+              }
+            },
+            {
+              "id": 37699,
+              "value": 3,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6640,
+                "name": "Demo CrewPlanner"
+              }
+            },
+            {
+              "id": 37704,
+              "value": 5,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 6640,
+                "name": "Demo CrewPlanner"
+              }
+            },
+            {
+              "id": 39723,
+              "value": 2,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 65574,
+                "name": "Briony Haynes"
+              }
+            },
+            {
+              "id": 39767,
+              "value": 3,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 65574,
+                "name": "Briony Haynes"
+              }
+            },
+            {
+              "id": 39789,
+              "value": 4,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 65574,
+                "name": "Briony Haynes"
+              }
+            },
+            {
+              "id": 39796,
+              "value": 4,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 65574,
+                "name": "Briony Haynes"
+              }
+            },
+            {
+              "id": 39810,
+              "value": 5,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 65574,
+                "name": "Briony Haynes"
+              }
+            },
+            {
+              "id": 40462,
+              "value": 3,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 65574,
+                "name": "Briony Haynes"
+              }
+            },
+            {
+              "id": 43299,
+              "value": 5,
+              "reschedule": true,
+              "low_rating_reason": null,
+              "author": {
+                "id": 65574,
+                "name": "Briony Haynes"
+              }
+            }
+          ]
+        },
+        "languages": [
+          {
+            "id": 1,
+            "name": "English",
+            "code": "EN",
+            "level": 5
+          },
+          {
+            "id": 3,
+            "name": "German",
+            "code": "DE",
+            "level": 3
+          }
+        ],
+        "bank_account": {
+          "id": 2769,
+          "type": "iban",
+          "iban": "DE89370400440532013000",
+          "bic": "ULSBIE2D"
+        },
+        "address": {
+          "name": null,
+          "street": "Fenchurch Street",
+          "number": "22",
+          "addition": null,
+          "zip_code": "EC3M 4BE",
+          "city": null,
+          "country": "GB",
+          "lat": 51.5123871,
+          "lng": -0.0793563,
+          "directions_url": "https://maps.google.com?daddr=22+Fenchurch+St%2C+London+EC3M+4BE%2C+UK&layer=t"
+        },
+        "nationality": "GB",
+        "driving_license": null,
+        "owns_car": false,
+        "clothing": {
+          "top_wear_size": null,
+          "bottom_wear_size": null,
+          "shoe_size": null
+        },
+        "height_in_cm": null,
+        "dependencies": {
+          "disabled": false,
+          "depended_partner": false,
+          "disabled_depended_partner": false,
+          "depended_children": null,
+          "disabled_depended_children": null,
+          "other_depended_persons": null,
+          "disabled_other_depended_persons": null,
+          "elderly_depended_persons": null,
+          "disabled_elderly_depended_persons": null
+        },
+        "emergency_contact": {
+          "ice_name": null,
+          "ice_phone": null,
+          "ice_relation": null
+        },
+        "custom_fields": {
+          "do_you_have_any_health_problems": [],
+          "any_serious_medical_conditions": [],
+          "if_yes": [],
+          "car": [],
+          "employee_statement": [
+            {
+              "id": 776,
+              "name": "A: This is my first job since 6 April and I’ve not been receiving taxable Jobseeker’s Allowance, Employment and Support Allowance, taxable Incapacity Benefit, State or Occupational Pension."
+            }
+          ],
+          "student_loan_9": [
+            {
+              "id": 757,
+              "name": "No"
+            }
+          ],
+          "student_loan_10": [],
+          "student_loan_11": [],
+          "student_loan_12": [],
+          "postgraduate_loan_13": [
+            {
+              "id": 764,
+              "name": "No"
+            }
+          ],
+          "postgraduate_loan_14": [],
+          "postgraduate_loan_15": []
+        },
+        "last_online_at": "2022-12-28T19:03:13.000000Z",
+        "last_active_at": "2022-12-09T12:19:52.000000Z",
+        "created_at": "2019-02-14T14:15:21.000000Z"
+      }
+      ]
+}

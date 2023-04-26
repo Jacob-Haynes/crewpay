@@ -103,6 +103,7 @@ def new_employee(cp_employee: CPEmployee, employer_id: str) -> None:
         employer_id=employer_id,
         crewplanner_id=cp_employee.id,
         staffology_id=created_staffology_employee["id"],
+        payroll_code=created_staffology_employee["employmentDetails"]["payrollCode"],
         status="ACTIVE",
     )
     new_entry.save()

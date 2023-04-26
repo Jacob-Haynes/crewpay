@@ -9,11 +9,11 @@ class CPRegistrationNumber(BaseModel):
 
 class CPAddress(BaseModel):
     name: Optional[str]
-    street: Optional[str]
-    number: Optional[str]
+    street: str
+    number: str
     addition: Optional[str]
     zip_code: str
-    city: Optional[str]
+    city: str
     country: Optional[str]
 
 

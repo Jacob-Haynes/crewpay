@@ -7,7 +7,7 @@ from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from api.v1.crewplanner.dto_cp_employee import CPEmployee
+from api.v1.crewplanner.dto_cp_employee import CPEmployee, CPAddress
 from crewpay.models import CrewplannerUser, Employer, InvalidEmployee
 
 
@@ -50,15 +50,14 @@ def validate_employee(stub: str, employee: Dict) -> Optional[CPEmployee]:
 def api_get_cp_employees(stub: str, access_token: str) -> List[Dict]:  # pylint: disable=unused-argument
     """Gets employees from the CrewPlanner API."""
     response = requests.get(
-        f"https://{stub}.crewplanner.com/api/v1/client/employees?filter[status]=verified"
-        f"&filter[contract_type]=VSA&filter[contract_type]=EMP&filter[payrolling]=no",
+        f"https://{stub}.crewplanner.com/api/v1/client/employees?filter[status]=verified&filter["
+        f"contract_type]=VSA&filter[contract_type]=EMP&filter[payrolling]=no",
         headers={"Authorization": f"Bearer {access_token}"},
     )
     if not response.ok:
         raise ValueError(response.json())
     results = response.json()["data"]
     cursor = response.json()["meta"]["next_cursor"]
-
     while cursor is not None:
         response = requests.get(
             f"https://{stub}.crewplanner.com/api/v1/client/employees?filter[status]=verified"
@@ -69,4 +68,7 @@ def api_get_cp_employees(stub: str, access_token: str) -> List[Dict]:  # pylint:
             raise ValueError(response.json())
         results += response.json()["data"]
         cursor = response.json()["meta"]["next_cursor"]
+
     return results
+
+# TODO: carry on testing from here

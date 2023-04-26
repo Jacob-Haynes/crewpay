@@ -114,9 +114,16 @@ class Payout(BaseModel):
     advance: Optional[float]
 
 
+class Project(BaseModel):
+    id: int
+    name: str
+    date: str
+    company: Company
+
+
 class CPShift(BaseModel):
     id: int
-    project: dict
+    project: Project
     slot: Slot
     present: bool
     worker: Worker

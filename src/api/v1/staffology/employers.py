@@ -128,3 +128,6 @@ class StaffologyEmployerAPI:
 
     def update_pay_run(self, employer: str, tax_year: str, pay_period: str, period: int) -> Dict:
         return self.put(f"/employers/{employer}/payrun/{tax_year}/{pay_period}/{period}").json()
+
+    def import_pay(self, employer: str, pay_period: str, payload: List[Dict]) -> None:
+        self.post(f"/employers/{employer}/payrun/{pay_period}/importpay?linesOnly=true", data=json.dumps(payload))

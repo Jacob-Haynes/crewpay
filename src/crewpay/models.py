@@ -40,6 +40,7 @@ class Employee(models.Model):
     employer = models.ForeignKey(Employer, related_name="employees", on_delete=models.CASCADE)
     crewplanner_id = models.CharField(unique=True, help_text="Crewplanner employee ID", max_length=500)
     staffology_id = models.CharField(unique=True, help_text="Crewplanner employee ID", max_length=500)
+    payroll_code = models.CharField(unique=True, help_text="Staffology payroll code", max_length=20)
     status = models.CharField(help_text="ACTIVE or ARCHIVED (CP driven)", max_length=20)
 
 
