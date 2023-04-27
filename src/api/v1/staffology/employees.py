@@ -1,6 +1,6 @@
 import datetime
 import json
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 import requests
 from django.contrib.auth.decorators import user_passes_test
@@ -8,14 +8,17 @@ from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from api.v1.crewplanner.dto_cp_employee import CPEmployee
+from api.v1.crewplanner.dto_cp_employee import CPCustomFieldList, CPEmployee
 from api.v1.crewplanner.employees import crewplanner_employees_get
 from api.v1.staffology.dto_so_employee import (
     StaffologyAddress,
+    StaffologyBankDetails,
     StaffologyEmployee,
     StaffologyEmploymentDetails,
+    StaffologyPayOptions,
     StaffologyPersonalDetails,
     StaffologyStarterDetails,
+    StaffologyTaxAndNi,
 )
 from crewpay.models import (
     CrewplannerUser,
@@ -73,7 +76,7 @@ def process_employees(employer_id: str) -> Response:  # pylint: disable=unused-a
     # update details
     # TODO: update employee details - need to think of a way to efficently check for differences
     # return totals
-    failures = InvalidEmployee.objects.filter(employer=employer_id).order_by("date_time")[:failed_employees]
+    failures = InvalidEmployee.objects.filter(employer=employer_id).order_by("-date_time")[:failed_employees]
     failures_list = []
     for failure in failures:
         failure_dict = {
@@ -162,17 +165,48 @@ def format_address(name: str, number: str, street: str) -> str:
     return " ".join([item for item in [name, number, street] if item is not None])
 
 
+def format_start_date(created_at: str, start_date: Union[CPCustomFieldList, None]) -> str:
+    """Chooses the start date for a cp employee"""
+    return created_at if start_date is None else start_date.name
+
+
+def format_marital_status(civil_status) -> str:
+    """Formats marital status and deals with nullable"""
+    return "unknown" if civil_status is None else civil_status
+
+
+def format_student_loan(s) -> str:
+    """Replaces 'Plan 1', 'Plan 2', and 'Plan 4' with 'PlanOne', 'PlanTwo', and 'PlanFour', respectively."""
+    s = s.replace("Plan 1", "PlanOne")
+    s = s.replace("Plan 2", "PlanTwo")
+    s = s.replace("Plan 4", "PlanFour")
+    return s
+
+
+def format_postgrad_loan(s) -> str:
+    """Replaces Yes No string with true false string"""
+    s = s.replace("Yes", "true")
+    s = s.replace("No", "false")
+    return s
+
+
 def cp_emp_to_staffology_emp(cp_emp: CPEmployee) -> StaffologyEmployee:
     """Converts a cp employee to a staffology employee data structure"""
     return StaffologyEmployee(
         personalDetails=StaffologyPersonalDetails(
-            title="",
-            # TODO: custom field titles
             firstName=cp_emp.first_name,
             lastName=cp_emp.last_name,
             dateOfBirth=cp_emp.date_of_birth,
             gender=cp_emp.gender,
-            maritalStatus=cp_emp.civil_status,
+            maritalStatus=format_marital_status(cp_emp.civil_status),
+            email=cp_emp.email,
+            emailPayslip="true",
+            passwordProtectPayslip="true",
+            pdfPasswordType="InitialsAndDob",
+            photoUrl=cp_emp.profile_picture_url,
+            telephone=cp_emp.phone_number,
+            niNumber=cp_emp.registration_numbers.nino,
+            passportNumber=cp_emp.registration_numbers.passport_number,
         ),
         address=StaffologyAddress(
             line1=format_address(cp_emp.address.name, cp_emp.address.number, cp_emp.address.street),
@@ -184,12 +218,21 @@ def cp_emp_to_staffology_emp(cp_emp: CPEmployee) -> StaffologyEmployee:
         employmentDetails=StaffologyEmploymentDetails(
             payrollCode=f"cp{cp_emp.id}",
             starterDetails=StaffologyStarterDetails(
-                startDate=cp_emp.created_at,
-                # TODO: custom field start date - if exists use custom field
-                starterDeclaration="A",
-                # TODO: custom field starter declaration
+                startDate=format_start_date(cp_emp.created_at, cp_emp.custom_fields.payroll_start_date),
+                starterDeclaration=cp_emp.custom_fields.payroll_employee_statement.name[0],
             ),
         ),
+        bankDetails=StaffologyBankDetails(
+            accountNumber=cp_emp.bank_account.account_number,
+            sortCode=cp_emp.bank_account.sort_code,
+        ),
+        payOptions=StaffologyPayOptions(
+            taxAndNi=StaffologyTaxAndNi(
+                postgradLoan=format_postgrad_loan(cp_emp.custom_fields.payroll_postgrad_loan.name),
+                studentLoan=format_student_loan(cp_emp.custom_fields.payroll_student_loan_plan.name),
+            )
+        ),
+        # TODO: auto enrolment, RTW, leave
     )
 
 

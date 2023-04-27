@@ -2,7 +2,9 @@ import json
 from pathlib import Path
 
 import pytest
+from pydantic import ValidationError
 
+from api.v1.crewplanner.dto_cp_employee import CPEmployee
 from api.v1.crewplanner.employees import validate_employee, api_get_cp_employees
 from crewpay.models import CrewplannerUser
 
@@ -46,6 +48,20 @@ def test_report_get():
     access_token = CrewplannerUser.objects.get(stub=stub).access_key
     report = api_get_cp_employees(stub, access_token)
     return
+
+
+def test_validation():
+    stub = "demo-4"
+    access_token = CrewplannerUser.objects.get(stub=stub).access_key
+    results = api_get_cp_employees(stub, access_token)
+    for employee in results:
+        try:
+            cp_employee = CPEmployee(**employee)
+            return cp_employee
+        except ValidationError as e:
+            error = str(e)
+            name = f"{employee['first_name']} {employee['last_name']}"
+            print(f"{name}: {error}")
 
 
 def test_employee_valid(expected_crewplanner_employee):

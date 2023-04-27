@@ -1,10 +1,11 @@
-from typing import Optional
+from typing import Dict, List, Optional, Union
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class CPRegistrationNumber(BaseModel):
-    nino: Optional[str]
+    nino: Optional[str] = None
+    passport_number: Optional[str] = None
 
 
 class CPAddress(BaseModel):
@@ -17,17 +18,36 @@ class CPAddress(BaseModel):
     country: Optional[str]
 
 
+class CPBankAccount(BaseModel):
+    account_number: str
+    sort_code: str
+
+
+class CPCustomFieldList(BaseModel):
+    id: int
+    name: str
+
+
+class CPCustomField(BaseModel):
+    payroll_employee_statement: CPCustomFieldList
+    payroll_student_loan_plan: CPCustomFieldList
+    payroll_postgrad_loan: CPCustomFieldList
+    payroll_start_date: Optional[CPCustomFieldList] = None
+
+
 class CPEmployee(BaseModel):
     id: str
     first_name: str
     last_name: str
+    phone_number: Optional[str] = None
+    email: str
+    profile_picture_url: Optional[str] = None
     status: str
-    civil_status: Optional[str]
+    civil_status: Union[str, None]
     gender: str
     date_of_birth: str
     registration_numbers: CPRegistrationNumber
     address: CPAddress
     created_at: str
-
-
-# TODO add custom fields?
+    bank_account: CPBankAccount
+    custom_fields: CPCustomField

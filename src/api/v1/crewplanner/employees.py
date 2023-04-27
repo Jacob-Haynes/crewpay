@@ -7,7 +7,7 @@ from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from api.v1.crewplanner.dto_cp_employee import CPEmployee, CPAddress
+from api.v1.crewplanner.dto_cp_employee import CPAddress, CPEmployee
 from crewpay.models import CrewplannerUser, Employer, InvalidEmployee
 
 
@@ -33,6 +33,9 @@ def validate_employee(stub: str, employee: Dict) -> Optional[CPEmployee]:
     """Validates a CrewPlanner employee by checking for missing required fields. Saves the invalid employee creation
     attempt to the DB with the reason for failure."""
     try:
+        for field in ["payroll_employee_statement", "payroll_student_loan_plan", "payroll_postgrad_loan"]:
+            field_value = employee["custom_fields"].get(field, [])
+            employee["custom_fields"][field] = field_value[0] if len(field_value) > 0 else None
         cp_employee = CPEmployee(**employee)
         return cp_employee
     except ValidationError as e:
@@ -71,4 +74,5 @@ def api_get_cp_employees(stub: str, access_token: str) -> List[Dict]:  # pylint:
 
     return results
 
-# TODO: carry on testing from here
+
+# TODO: currently CP api doenst provide id expired workers - ticket has been created

@@ -9,9 +9,9 @@ from rest_framework.response import Response
 
 from api.v1.crewplanner.dto_cp_ShiftsByUser import CPShiftsByUser
 from api.v1.crewplanner.report import create_shift_lines
-from api.v1.staffology.dto_so_pay_options_import import PayLine, Line
+from api.v1.staffology.dto_so_pay_options_import import Line, PayLine
 from api.v1.staffology.employers import StaffologyEmployerAPI, activate_payruns
-from crewpay.models import Employer, Employee, InvalidShift
+from crewpay.models import Employee, Employer, InvalidShift
 
 
 @api_view(["GET"])
