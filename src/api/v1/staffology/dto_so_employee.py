@@ -38,16 +38,8 @@ class StaffologyEmploymentDetails(BaseModel):
     starterDetails: StaffologyStarterDetails
 
 
-# class StaffologyAutoEnrolment(BaseModel):
-# TODO: with mike https://app.staffology.co.uk/api/docs/models/autoenrolment
-
-
 # class StaffologyLeaveSettings(BaseModel):
-# TODO: with mike https://app.staffology.co.uk/api/docs/models/leavesettings
-
-
-# class StaffologyRightToWork(BaseModel):
-# TODO: with mike https://app.staffology.co.uk/api/docs/models/righttowork
+# TODO: future https://app.staffology.co.uk/api/docs/models/leavesettings
 
 
 class StaffologyBankDetails(BaseModel):
@@ -56,11 +48,13 @@ class StaffologyBankDetails(BaseModel):
 
 
 class StaffologyTaxAndNi(BaseModel):
+    niTable: str
     postgradLoan: str = "false"
     studentLoan: str = "None"
 
 
 class StaffologyPayOptions(BaseModel):
+    period: str
     taxAndNi: StaffologyTaxAndNi
 
 
@@ -68,8 +62,5 @@ class StaffologyEmployee(BaseModel):
     personalDetails: StaffologyPersonalDetails
     address: StaffologyAddress
     employmentDetails: StaffologyEmploymentDetails
-    # autoEnrolment: StaffologyAutoEnrolment
-    # leaveSettings: StaffologyLeaveSettings
-    # rightToWork: StaffologyRightToWork
     bankDetails: StaffologyBankDetails
     payOptions: StaffologyPayOptions

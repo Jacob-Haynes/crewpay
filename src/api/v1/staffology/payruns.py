@@ -28,6 +28,10 @@ def run_payroll(request: Request):
     # get the full payrun to edit
     pay_run = StaffologyEmployerAPI().get_pay_run(employer, tax_year, pay_period, pay_run["metadata"]["periodNumber"])
     # get shift lines from CP
+    # TODO: add ui functionality
+    #  period before, 1 period in arears, 2 periods in arears
+    #  calculate start date and end date for report based on arears + start date
+    #  check we dont overlap previous by saving previous end date
     start_date = pay_run["startDate"]
     end_date = pay_run["endDate"]
     shift_lines, failed_shifts = create_shift_lines(user, start_date, end_date)

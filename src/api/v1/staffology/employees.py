@@ -1,4 +1,5 @@
-import datetime
+import csv
+from datetime import datetime as dt
 import json
 from typing import Dict, List, Optional, Union
 
@@ -70,11 +71,15 @@ def process_employees(employer_id: str) -> Response:  # pylint: disable=unused-a
     # rehire
     rehires = mark_as_rehire(existing_ids, employer_id)
 
-    # delete
-    deleted = delete_employee(cp_employees, employer_id)
+    # delete  ### this is for testing only ###
+    run_delete = False
+    deleted = []
+    if run_delete:
+        deleted = delete_employee(cp_employees, employer_id)
 
     # update details
     # TODO: update employee details - need to think of a way to efficently check for differences
+    # bank details, address details, contact number, email
     # return totals
     failures = InvalidEmployee.objects.filter(employer=employer_id).order_by("-date_time")[:failed_employees]
     failures_list = []
@@ -98,9 +103,38 @@ def process_employees(employer_id: str) -> Response:  # pylint: disable=unused-a
     )
 
 
+# TODO: create this report in the UI - provide a way to view this with a user login?
+
+def link_employee(cp_staff_list, employer_id: str) -> None:
+    """ this links an already existing staffology employee to a cp one via a csv.
+    used primarily for importing fire but could be useful."""
+    staffology_list = StaffologyEmployeeAPI().staffology_employees_get(employer_id)
+    for person in cp_staff_list:
+        payroll_code = person["payroll_code"]
+        for staff in staffology_list:
+            if staff["metadata"]["payrollCode"] == payroll_code and person["status"] == "Active":
+                new_entry = Employee(
+                    employer_id=employer_id,
+                    crewplanner_id=person["id"],
+                    staffology_id=staff["id"],
+                    payroll_code=payroll_code,
+                    status="ACTIVE",
+                )
+                new_entry.save()
+            elif staff["metadata"]["payrollCode"] == payroll_code:
+                new_entry = Employee(
+                    employer_id=employer_id,
+                    crewplanner_id=person["id"],
+                    staffology_id=staff["id"],
+                    payroll_code=payroll_code,
+                    status="ARCHIVED",
+                )
+                new_entry.save()
+
+
 def new_employee(cp_employee: CPEmployee, employer_id: str) -> None:
     """creates a new employee in staffology and the database"""
-    new_employee_payload = cp_emp_to_staffology_emp(cp_employee)
+    new_employee_payload = cp_emp_to_staffology_emp(cp_employee, employer_id)
     created_staffology_employee = StaffologyEmployeeAPI().employee_create(employer_id, new_employee_payload)
     new_entry = Employee(
         employer_id=employer_id,
@@ -128,11 +162,12 @@ def mark_as_leaver(existing_ids: List[CPEmployee], employer_id: str) -> List:
 
 def mark_as_rehire(existing_ids: List[CPEmployee], employer_id: str) -> int:
     """Marks un-archived cp employees as rehires"""
+    # TODO: test that rehire updates start date to the rehire date
     rehires = 0
     for cp_employee in existing_ids:
         if (
-            cp_employee.status != "ARCHIVED"
-            and Employee.objects.get(crewplanner_id=cp_employee.id).status == "ARCHIVED"
+                cp_employee.status != "ARCHIVED"
+                and Employee.objects.get(crewplanner_id=cp_employee.id).status == "ARCHIVED"
         ):
             rehire = Employee.objects.get(crewplanner_id=cp_employee.id).staffology_id
             rehired = StaffologyEmployeeAPI().mark_rehires(employer_id, rehire)
@@ -172,7 +207,13 @@ def format_start_date(created_at: str, start_date: Union[CPCustomFieldList, None
 
 def format_marital_status(civil_status) -> str:
     """Formats marital status and deals with nullable"""
-    return "unknown" if civil_status is None else civil_status
+    options = ["Single", "Married", "Divorced", "Widowed", "CivilPartnership", "Unknown"]
+    if civil_status is None:
+        return "Unknown"
+    elif civil_status in options:
+        return civil_status
+    else:
+        return "Unknown"
 
 
 def format_student_loan(s) -> str:
@@ -183,14 +224,32 @@ def format_student_loan(s) -> str:
     return s
 
 
-def format_postgrad_loan(s) -> str:
+def format_postgrad_loan(s: str) -> str:
     """Replaces Yes No string with true false string"""
     s = s.replace("Yes", "true")
     s = s.replace("No", "false")
     return s
 
 
-def cp_emp_to_staffology_emp(cp_emp: CPEmployee) -> StaffologyEmployee:
+def age(dob: str) -> int:
+    """works out the workers age for ni table"""
+    dob_dt = dt.strptime(dob, "%Y-%m-%d")
+    today = dt.today()
+    worker_age = dob_dt - today
+    return int(worker_age.days / 365)
+
+
+def format_ni_table(worker_age: int) -> str:
+    if worker_age < 21:
+        ni_table = "M"
+    elif worker_age > 66:
+        ni_table = "C"
+    else:
+        ni_table = "A"
+    return ni_table
+
+
+def cp_emp_to_staffology_emp(cp_emp: CPEmployee, employer_id) -> StaffologyEmployee:
     """Converts a cp employee to a staffology employee data structure"""
     return StaffologyEmployee(
         personalDetails=StaffologyPersonalDetails(
@@ -227,12 +286,15 @@ def cp_emp_to_staffology_emp(cp_emp: CPEmployee) -> StaffologyEmployee:
             sortCode=cp_emp.bank_account.sort_code,
         ),
         payOptions=StaffologyPayOptions(
+            period=Employer.objects.get(id=employer_id).pay_period,
             taxAndNi=StaffologyTaxAndNi(
+                niTable=format_ni_table(age(cp_emp.date_of_birth)),
                 postgradLoan=format_postgrad_loan(cp_emp.custom_fields.payroll_postgrad_loan.name),
                 studentLoan=format_student_loan(cp_emp.custom_fields.payroll_student_loan_plan.name),
             )
         ),
-        # TODO: auto enrolment, RTW, leave
+        # TODO: investigate why address isn't working
+        # TODO: validate bank accounts using open banking?
     )
 
 

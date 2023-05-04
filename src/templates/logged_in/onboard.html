@@ -37,6 +37,7 @@
         <div class="field">
             <input type="text" name="crewplanner_key" placeholder="CrewPlanner API Key...">
         </div>
+        <h3>Pay Settings</h3>
         <div class="field">
             <label for="pay_period">Choose pay period:</label>
             <select id="pay_period" name="pay_period">
@@ -65,6 +66,49 @@
         </div>
         <div class="field">
             <input type="text" name="payment_date" placeholder="yyyy-mm-dd, first payment date"><br>
+        </div>
+        <h3>Leave Settings</h3>
+        <div class="field">
+            <label for="leave_type">Choose leave type:</label>
+            <select id="leave_type" name="leave_type">
+                <option value="Accrual_Money">Accrue payments in lieu of holiday days</option>
+                <option value="Accrual_Days">Accrue holiday days for time worked</option>
+                <option value="Days">Allowance is set as a number of Days</option>
+            </select>
+        </div>
+        <div class="field">
+            <input type="text" name="accrue_hours_per_day" placeholder="If accrual days - how many hours worked accrues a day?"><br>
+        </div>
+        <div class="field">
+            <input type="text" name="accrue_payment_in_lieu_rate" placeholder="The rate at which payments in lieu accrue - typical 12.07"><br>
+        </div>
+        <div class="field">
+            <label for="accrue_set_amount">Accrue a set amount of days holiday per period worked</label>
+            <select id="accrue_set_amount" name="accrue_set_amount">
+                <option value="false">No</option>
+                <option value="true">Yes</option>
+            </select>
+        </div>
+        <div class="field">
+            <label for="show_allowance_on_pay_slip">Show the remaining allowance on employee payslip?</label>
+            <select id="show_allowance_on_pay_slip" name="show_allowance_on_pay_slip">
+                <option value="false">No</option>
+                <option value="true">Yes</option>
+            </select>
+        </div>
+        <div class="field">
+            <label for="show_ahp_on_pay_slip">Show the AHP balance on the employee payslip?</label>
+            <select id="show_ahp_on_pay_slip" name="show_ahp_on_pay_slip">
+                <option value="false">No</option>
+                <option value="true">Yes</option>
+            </select>
+        </div>
+        <div class="field">
+            <label for="accrue_payment_in_lieu_pay_automatically">Automatically pay employees outstanding holiday pay?</label>
+            <select id="accrue_payment_in_lieu_pay_automatically" name="accrue_payment_in_lieu_pay_automatically">
+                <option value="false">No</option>
+                <option value="true">Yes</option>
+            </select>
         </div>
 
         {% csrf_token %}

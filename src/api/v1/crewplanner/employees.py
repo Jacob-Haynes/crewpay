@@ -54,7 +54,7 @@ def api_get_cp_employees(stub: str, access_token: str) -> List[Dict]:  # pylint:
     """Gets employees from the CrewPlanner API."""
     response = requests.get(
         f"https://{stub}.crewplanner.com/api/v1/client/employees?filter[status]=verified&filter["
-        f"contract_type]=VSA&filter[contract_type]=EMP&filter[payrolling]=no",
+        f"contract_types][]=VSA&filter[contract_types][]=EMP&filter[payrolling]=no",
         headers={"Authorization": f"Bearer {access_token}"},
     )
     if not response.ok:
@@ -64,7 +64,7 @@ def api_get_cp_employees(stub: str, access_token: str) -> List[Dict]:  # pylint:
     while cursor is not None:
         response = requests.get(
             f"https://{stub}.crewplanner.com/api/v1/client/employees?filter[status]=verified"
-            f"&filter[contract_type]=VSA&filter[contract_type]=EMP&filter[payrolling]=no&cursor={cursor}",
+            f"&filter[contract_types][]=VSA&filter[contract_types][]=EMP&filter[payrolling]=no&cursor={cursor}",
             headers={"Authorization": f"Bearer {access_token}"},
         )
         if not response.ok:
@@ -74,5 +74,3 @@ def api_get_cp_employees(stub: str, access_token: str) -> List[Dict]:  # pylint:
 
     return results
 
-
-# TODO: currently CP api doenst provide id expired workers - ticket has been created

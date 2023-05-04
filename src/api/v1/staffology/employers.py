@@ -8,6 +8,7 @@ from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from api.v1.staffology.dto_so_employer import StaffologyEmployer, DefaultPayOptions, LeaveSettings
 from crewpay.models import Employer, StaffologyUser
 
 
@@ -22,9 +23,9 @@ def employers_get(request: Request) -> Response:  # pylint: disable=unused-argum
     return Response(response.json())
 
 
-def create_employer(user: User, pay_period: str, tax_year: str, period_end: str, payment_date: str) -> None:
+def create_employer(user: User, pay_period: str, tax_year: str, period_end: str, payment_date: str, so_employer: StaffologyEmployer) -> None:
     """Create a new employer in staffology and the db from their crewplanner data."""
-    payload = {"name": user.username, "defaultPayOptions": {"payPeriod": pay_period}}
+    payload = so_employer.dict()
     employer_data = StaffologyEmployerAPI().create_employer(payload)
     schedule(employer_data["id"], pay_period, tax_year, period_end, payment_date)
     employer = Employer(user=user, id=employer_data["id"], pay_period=pay_period)
@@ -58,6 +59,25 @@ def next_pay_run(pay_schedule: Dict) -> Dict:
     else:
         return {}
     return pay_run
+
+
+def staffology_employer(request) -> StaffologyEmployer:
+    """creates a staffology employer object from the ui create employer form"""
+    return StaffologyEmployer(
+        name=request.POST["name"],
+        defaultPayOptions=DefaultPayOptions(
+            payPeriod=request.POST["pay_period"],
+        ),
+        leaveSettings=LeaveSettings(
+            holidayType=request.POST["leave_type"],
+            accrueSetAmount=request.POST["accrue_set_amount"],
+            accrueHoursPerDay=request.POST["accrue_hours_per_day"],
+            showAllowanceOnPayslip=request.POST["show_allowance_on_pay_slip"],
+            showAhpOnPayslip=request.POST["show_ahp_on_pay_slip"],
+            accruePaymentInLieuRate=request.POST["accrue_payment_in_lieu_rate"],
+            accruePaymentInLieuPayAutomatically=request.POST["accrue_payment_in_lieu_pay_automatically"],
+        )
+    )
 
 
 class StaffologyEmployerAPI:
@@ -108,7 +128,7 @@ class StaffologyEmployerAPI:
     def update_pay_schedule(self, employer: str, tax_year: str, pay_period: str, payload) -> None:
         self.put(f"/employers/{employer}/schedules/{tax_year}/{pay_period}/1", data=json.dumps(payload))
 
-    def create_employer(self, payload) -> Dict:
+    def create_employer(self, payload: Dict) -> Dict:
         return self.post("/employers", data=json.dumps(payload)).json()
 
     def get_pay_schedules(self, employer: str, tax_year: str) -> List[Dict]:

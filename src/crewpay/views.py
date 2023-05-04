@@ -8,7 +8,8 @@ from django.dispatch import receiver
 from django.shortcuts import redirect, render
 from rest_framework.authtoken.models import Token
 
-from api.v1.staffology.employers import create_employer
+from api.v1.staffology.employees import sync_employees
+from api.v1.staffology.employers import create_employer, staffology_employer
 from crewpay.forms import EmployerForm
 from crewpay.models import CrewplannerUser, Employer, StaffologyUser
 from crewpay.settings import CREWPAY_VERSION
@@ -121,12 +122,14 @@ def create_user(request):
         )
         new_user.save()
         new_cp_user.save()
+        employer = staffology_employer(request)
         create_employer(
             new_user,
             request.POST["pay_period"],
             request.POST["tax_year"],
             request.POST["period_end"],
             request.POST["payment_date"],
+            employer,
         )
         return redirect("/onboard?user_created=true")
 

@@ -1,3 +1,4 @@
+import csv
 import json
 from pathlib import Path
 
@@ -6,13 +7,13 @@ from pydantic import ValidationError
 
 from api.v1.crewplanner.dto_cp_employee import CPEmployee
 from api.v1.crewplanner.employees import validate_employee, api_get_cp_employees
+from api.v1.staffology.employees import link_employee
 from crewpay.models import CrewplannerUser
 
 
 @pytest.fixture
 def data_path() -> Path:
     return Path(__file__).parent / "data"
-
 
 
 @pytest.fixture()
