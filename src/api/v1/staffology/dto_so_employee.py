@@ -38,10 +38,6 @@ class StaffologyEmploymentDetails(BaseModel):
     starterDetails: StaffologyStarterDetails
 
 
-# class StaffologyLeaveSettings(BaseModel):
-# TODO: future https://app.staffology.co.uk/api/docs/models/leavesettings
-
-
 class StaffologyBankDetails(BaseModel):
     accountNumber: str
     sortCode: str

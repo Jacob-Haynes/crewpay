@@ -80,6 +80,15 @@ def staffology_employer(request) -> StaffologyEmployer:
     )
 
 
+def update_employer_db(employer_id: str) -> None:
+    """checks staffology for updates to an employers settings and updates them in the local db"""
+    employer_data = StaffologyEmployerAPI().get_employer(employer_id)
+    pay_period = employer_data["defaultPayOptions"]["period"]
+    employer = Employer.objects.get(id=employer_id)
+    employer.pay_period = pay_period
+    employer.save()
+
+
 class StaffologyEmployerAPI:
     """Handles all staffology employer api calls"""
 
@@ -151,3 +160,6 @@ class StaffologyEmployerAPI:
 
     def import_pay(self, employer: str, pay_period: str, payload: List[Dict]) -> None:
         self.post(f"/employers/{employer}/payrun/{pay_period}/importpay?linesOnly=true", data=json.dumps(payload))
+
+    def get_employer(self, employer: str) -> Dict:
+        return self.get(f"/employers/{employer}").json()

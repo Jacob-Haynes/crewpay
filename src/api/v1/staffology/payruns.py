@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from api.v1.crewplanner.dto_cp_ShiftsByUser import CPShiftsByUser
 from api.v1.crewplanner.report import create_shift_lines
 from api.v1.staffology.dto_so_pay_options_import import Line, PayLine
-from api.v1.staffology.employers import StaffologyEmployerAPI, activate_payruns
+from api.v1.staffology.employers import StaffologyEmployerAPI, activate_payruns, update_employer_db
 from crewpay.models import Employee, Employer, InvalidShift
 
 
@@ -19,6 +19,8 @@ from crewpay.models import Employee, Employer, InvalidShift
 def run_payroll(request: Request):
     employer = request.GET["employer"]
     tax_year = request.GET["tax_year"]
+    # update employer options
+    update_employer_db(employer)
     user = Employer.objects.get(id=employer).user
     pay_period = Employer.objects.get(id=employer).pay_period
     # get pay schedules

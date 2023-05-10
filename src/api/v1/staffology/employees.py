@@ -21,6 +21,7 @@ from api.v1.staffology.dto_so_employee import (
     StaffologyStarterDetails,
     StaffologyTaxAndNi,
 )
+from api.v1.staffology.employers import update_employer_db
 from crewpay.models import (
     CrewplannerUser,
     Employee,
@@ -34,6 +35,8 @@ from crewpay.models import (
 @user_passes_test(lambda u: u.is_superuser)
 def sync_employees(request: Request) -> Response:  # pylint: disable=unused-argument
     """UI function to sync employees from crewplanner to staffology"""
+    # check for employer updates
+    update_employer_db(request.GET["employer"])
     return process_employees(request.GET["employer"])
 
 
@@ -94,11 +97,11 @@ def process_employees(employer_id: str) -> Response:  # pylint: disable=unused-a
     return Response(
         {
             "Employees Added": new_employee_count,
-            "Failed to Import": failed_employees,
+            "Failed to Sync": failed_employees,
             "Marked as Leaver": len(leavers),
             "Marked as Rehired": rehires,
             "Deleted Employees": len(deleted),
-            "Failed Imports": failures_list,
+            "Failed Syncs": failures_list,
         }
     )
 
@@ -162,7 +165,6 @@ def mark_as_leaver(existing_ids: List[CPEmployee], employer_id: str) -> List:
 
 def mark_as_rehire(existing_ids: List[CPEmployee], employer_id: str) -> int:
     """Marks un-archived cp employees as rehires"""
-    # TODO: test that rehire updates start date to the rehire date
     rehires = 0
     for cp_employee in existing_ids:
         if (
@@ -202,7 +204,17 @@ def format_address(name: str, number: str, street: str) -> str:
 
 def format_start_date(created_at: str, start_date: Union[CPCustomFieldList, None]) -> str:
     """Chooses the start date for a cp employee"""
-    return created_at if start_date is None else start_date.name
+    if start_date is None:
+        return created_at
+    else:
+        date_string = start_date.name
+        date_format = "%Y-%m-%d"
+        try:
+            dt.strptime(date_string, date_format)
+            return date_string
+        except ValueError:
+            return created_at
+# TODO: test start_date after the api fix is made
 
 
 def format_marital_status(civil_status) -> str:
@@ -235,7 +247,7 @@ def age(dob: str) -> int:
     """works out the workers age for ni table"""
     dob_dt = dt.strptime(dob, "%Y-%m-%d")
     today = dt.today()
-    worker_age = dob_dt - today
+    worker_age = abs(dob_dt - today)
     return int(worker_age.days / 365)
 
 
@@ -293,8 +305,9 @@ def cp_emp_to_staffology_emp(cp_emp: CPEmployee, employer_id) -> StaffologyEmplo
                 studentLoan=format_student_loan(cp_emp.custom_fields.payroll_student_loan_plan.name),
             )
         ),
-        # TODO: investigate why address isn't working
+        # TODO: await address fix from mich
         # TODO: validate bank accounts using open banking?
+        # TODO: handle staffology data rejection eg invalid national insurance
     )
 
 
@@ -341,7 +354,7 @@ class StaffologyEmployeeAPI:
         return self.post(f"employers/{employer}/employees", data=employee.json()).json()
 
     def mark_leavers(self, employer: str, employees: List[str]) -> None:
-        now = datetime.date.today()
+        now = dt.today()
         params = {"date": now.strftime("%Y-%m-%d"), "emailP45": json.dumps(False)}
         self.put(f"employers/{employer}/employees/leavers", data=json.dumps(employees), params=params)
 

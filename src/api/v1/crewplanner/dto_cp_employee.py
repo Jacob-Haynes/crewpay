@@ -32,7 +32,7 @@ class CPCustomField(BaseModel):
     payroll_employee_statement: CPCustomFieldList
     payroll_student_loan_plan: CPCustomFieldList
     payroll_postgrad_loan: CPCustomFieldList
-    payroll_start_date: Optional[CPCustomFieldList] = None
+    payroll_start_date: Optional[CPCustomFieldList]
 
 
 class CPEmployee(BaseModel):
