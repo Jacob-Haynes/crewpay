@@ -83,6 +83,17 @@
             <input type="text" name="accrue_payment_in_lieu_rate" placeholder="The rate at which payments in lieu accrue - typical 12.07"><br>
         </div>
         <div class="field">
+            <input type="text" name="allowance_reset_date" placeholder="If using day based leave, when does your allowance reset? yyyy-mm-dd"><br>
+        </div>
+        <div class="field">
+            <label for="accrue_payment_in_lieu_all_gross_pay">If accruing payments in lieu, is this based on gross pay or regular pay?</label>
+            <select id="accrue_payment_in_lieu_all_gross_pay" name="accrue_payment_in_lieu_all_gross_pay">
+                <option value=""></option>
+                <option value="true">Gross Pay</option>
+                <option value="false">Regular Pay</option>
+            </select>
+        </div>
+        <div class="field">
             <label for="accrue_set_amount">Accrue a set amount of days holiday per period worked</label>
             <select id="accrue_set_amount" name="accrue_set_amount">
                 <option value="false">No</option>

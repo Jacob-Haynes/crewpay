@@ -139,6 +139,8 @@ def new_employee(cp_employee: CPEmployee, employer_id: str) -> None:
     """creates a new employee in staffology and the database"""
     new_employee_payload = cp_emp_to_staffology_emp(cp_employee, employer_id)
     created_staffology_employee = StaffologyEmployeeAPI().employee_create(employer_id, new_employee_payload)
+    # create hash of employee payload for later comparison
+
     new_entry = Employee(
         employer_id=employer_id,
         crewplanner_id=cp_employee.id,

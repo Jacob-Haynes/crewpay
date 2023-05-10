@@ -63,21 +63,41 @@ def next_pay_run(pay_schedule: Dict) -> Dict:
 
 def staffology_employer(request) -> StaffologyEmployer:
     """creates a staffology employer object from the ui create employer form"""
+    if request.POST["leave_type"] == "Accrual_Money":
+        leave_settings = LeaveSettings(
+            holidayType=request.POST["leave_type"],
+            showAllowanceOnPayslip=request.POST["show_allowance_on_pay_slip"],
+            accruePaymentInLieuPayAutomatically=request.POST["accrue_payment_in_lieu_pay_automatically"],
+            accruePaymentInLieuAllGrossPay=request.POST["accrue_payment_in_lieu_all_gross_pay"],
+            accruePaymentInLieuRate=request.POST["accrue_payment_in_lieu_rate"],
+            showAhpOnPayslip=request.POST["show_ahp_on_pay_slip"],
+        )
+    elif request.POST["leave_type"] == "Accrual_Days":
+        leave_settings = LeaveSettings(
+            holidayType=request.POST["leave_type"],
+            allowanceResetDate=request.POST["allowance_reset_date"],
+            showAllowanceOnPayslip=request.POST["show_allowance_on_pay_slip"],
+            accrueSetAmount=request.POST["accrue_set_amount"],
+            accruePaymentInLieuRate=request.POST["accrue_payment_in_lieu_rate"],
+            accrueHoursPerDay=request.POST["accrue_hours_per_day"],
+            showAhpOnPayslip=request.POST["show_ahp_on_pay_slip"],
+        )
+    else:
+        leave_settings = LeaveSettings(
+            holidayType=request.POST["leave_type"],
+            allowanceResetDate=request.POST["allowance_reset_date"],
+            showAllowanceOnPayslip=request.POST["show_allowance_on_pay_slip"],
+            accrueSetAmount=request.POST["accrue_set_amount"],
+            showAhpOnPayslip=request.POST["show_ahp_on_pay_slip"],
+        )
+
     return StaffologyEmployer(
         name=request.POST["name"],
         defaultPayOptions=DefaultPayOptions(
             payPeriod=request.POST["pay_period"],
         ),
-        leaveSettings=LeaveSettings(
-            holidayType=request.POST["leave_type"],
-            accrueSetAmount=request.POST["accrue_set_amount"],
-            accrueHoursPerDay=request.POST["accrue_hours_per_day"],
-            showAllowanceOnPayslip=request.POST["show_allowance_on_pay_slip"],
-            showAhpOnPayslip=request.POST["show_ahp_on_pay_slip"],
-            accruePaymentInLieuRate=request.POST["accrue_payment_in_lieu_rate"],
-            accruePaymentInLieuPayAutomatically=request.POST["accrue_payment_in_lieu_pay_automatically"],
+        leaveSettings=leave_settings
         )
-    )
 
 
 def update_employer_db(employer_id: str) -> None:
