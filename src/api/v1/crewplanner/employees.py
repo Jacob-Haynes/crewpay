@@ -35,7 +35,7 @@ def validate_employee(stub: str, employee: Dict) -> Optional[CPEmployee]:
     try:
         for field in ["payroll_employee_statement", "payroll_student_loan_plan", "payroll_postgrad_loan"]:
             field_value = employee["custom_fields"].get(field, [])
-            employee["custom_fields"][field] = field_value[0] if len(field_value) > 0 else None
+            employee["custom_fields"][field] = field_value[0] if field_value is not None else None
         cp_employee = CPEmployee(**employee)
         return cp_employee
     except ValidationError as e:

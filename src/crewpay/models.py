@@ -42,6 +42,7 @@ class Employee(models.Model):
     staffology_id = models.CharField(unique=True, help_text="Crewplanner employee ID", max_length=500)
     payroll_code = models.CharField(help_text="Staffology payroll code", max_length=20)
     status = models.CharField(help_text="ACTIVE or ARCHIVED (CP driven)", max_length=20)
+    payload_hash = models.CharField(max_length=64)
 
 
 class InvalidEmployee(models.Model):

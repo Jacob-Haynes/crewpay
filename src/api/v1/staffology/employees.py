@@ -1,4 +1,4 @@
-import csv
+import hashlib
 from datetime import datetime as dt
 import json
 from typing import Dict, List, Optional, Union
@@ -9,7 +9,7 @@ from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from api.v1.crewplanner.dto_cp_employee import CPCustomFieldList, CPEmployee
+from api.v1.crewplanner.dto_cp_employee import CPEmployee
 from api.v1.crewplanner.employees import crewplanner_employees_get
 from api.v1.staffology.dto_so_employee import (
     StaffologyAddress,
@@ -21,6 +21,7 @@ from api.v1.staffology.dto_so_employee import (
     StaffologyStarterDetails,
     StaffologyTaxAndNi,
 )
+
 from api.v1.staffology.employers import update_employer_db
 from crewpay.models import (
     CrewplannerUser,
@@ -54,12 +55,14 @@ def process_employees(employer_id: str) -> Response:  # pylint: disable=unused-a
     stored_cp_employee_ids = Employee.objects.filter(employer=employer_id).values_list("crewplanner_id", flat=True)
 
     # check for new employees
-    existing_ids = []
+    employees_to_update = []
     new_employee_count = 0
     for cp_employee in cp_employees:
         if cp_employee.id in stored_cp_employee_ids:
-            # add id to a list of existing employees to check for updates later
-            existing_ids.append(cp_employee)
+            # check for payload updates and if there are - store them to be updated
+            to_update = is_employee_modified(cp_employee)
+            if to_update:
+                employees_to_update.append(cp_employee)
             continue
         if cp_employee.status == "ARCHIVED":
             # inactive and does not exist in staffology so can just skip
@@ -69,20 +72,23 @@ def process_employees(employer_id: str) -> Response:  # pylint: disable=unused-a
         new_employee_count += 1
 
     # leavers
-    leavers = mark_as_leaver(existing_ids, employer_id)
+    leavers = mark_as_leaver(employees_to_update, employer_id)
+    employees_to_update = [emp for emp in employees_to_update if emp.id not in leavers]
 
     # rehire
-    rehires = mark_as_rehire(existing_ids, employer_id)
+    rehires = mark_as_rehire(employees_to_update, employer_id)
+    employees_to_update = [emp for emp in employees_to_update if emp.id not in rehires]
 
     # delete  ### this is for testing only ###
     run_delete = False
     deleted = []
     if run_delete:
         deleted = delete_employee(cp_employees, employer_id)
+    employees_to_update = [emp for emp in employees_to_update if emp.id not in deleted]
 
-    # update details
-    # TODO: update employee details - need to think of a way to efficently check for differences
-    # bank details, address details, contact number, email
+    # update details in staffology
+    for employee in employees_to_update:
+        update_employee(employee, employer_id)
     # return totals
     failures = InvalidEmployee.objects.filter(employer=employer_id).order_by("-date_time")[:failed_employees]
     failures_list = []
@@ -99,8 +105,9 @@ def process_employees(employer_id: str) -> Response:  # pylint: disable=unused-a
             "Employees Added": new_employee_count,
             "Failed to Sync": failed_employees,
             "Marked as Leaver": len(leavers),
-            "Marked as Rehired": rehires,
+            "Marked as Rehired": len(rehires),
             "Deleted Employees": len(deleted),
+            "Updated Employees": len(employees_to_update),
             "Failed Syncs": failures_list,
         }
     )
@@ -140,6 +147,8 @@ def new_employee(cp_employee: CPEmployee, employer_id: str) -> None:
     new_employee_payload = cp_emp_to_staffology_emp(cp_employee, employer_id)
     created_staffology_employee = StaffologyEmployeeAPI().employee_create(employer_id, new_employee_payload)
     # create hash of employee payload for later comparison
+    payload = cp_emp_to_staffology_emp(cp_employee)
+    payload_hash = consistent_hash(payload)
 
     new_entry = Employee(
         employer_id=employer_id,
@@ -147,8 +156,43 @@ def new_employee(cp_employee: CPEmployee, employer_id: str) -> None:
         staffology_id=created_staffology_employee["id"],
         payroll_code=created_staffology_employee["employmentDetails"]["payrollCode"],
         status="ACTIVE",
+        payload_hash=payload_hash
     )
     new_entry.save()
+
+
+def update_employee(cp_employee: CPEmployee, employer_id: str) -> None:
+    """Updates employee data in staffology"""
+    employee = Employee.objects.get(crewplanner_id=cp_employee.id)
+    updated_payload = cp_emp_to_staffology_emp(cp_employee, employer_id)
+    StaffologyEmployeeAPI().update_employees(employer_id, employee.staffology_id, updated_payload)
+    # update hash of employee
+    payload_hash = consistent_hash(updated_payload)
+    employee.payload_hash = payload_hash
+    employee.save()
+
+
+def consistent_hash(payload: StaffologyEmployee):
+    """Returns a consistent hash of the model"""
+    instance_dict = payload.dict()
+    sorted_dict = dict(sorted(instance_dict.items()))
+    instance_str = str(sorted_dict)
+    hash_object = hashlib.sha256(instance_str.encode())
+    return hash_object.hexdigest()
+
+
+def is_employee_modified(cp_employee: CPEmployee) -> bool:
+    """Checks if the employee data is different from the stored hash"""
+    employee = Employee.objects.get(crewplanner_id=cp_employee.id)
+    employer_id = employee.employer.id
+    new_payload = cp_emp_to_staffology_emp(cp_employee, employer_id)
+    # Calculate the hash of the new payload using the same algorithm as before
+    new_payload_hash = consistent_hash(new_payload)
+    # Compare the new payload hash with the stored hash in the model
+    if employee.payload_hash == new_payload_hash:
+        return False  # Payload has not been modified
+    else:
+        return True  # Payload has been modified
 
 
 def mark_as_leaver(existing_ids: List[CPEmployee], employer_id: str) -> List:
@@ -165,9 +209,9 @@ def mark_as_leaver(existing_ids: List[CPEmployee], employer_id: str) -> List:
     return leavers
 
 
-def mark_as_rehire(existing_ids: List[CPEmployee], employer_id: str) -> int:
+def mark_as_rehire(existing_ids: List[CPEmployee], employer_id: str) -> List:
     """Marks un-archived cp employees as rehires"""
-    rehires = 0
+    rehires = []
     for cp_employee in existing_ids:
         if (
                 cp_employee.status != "ARCHIVED"
@@ -176,7 +220,7 @@ def mark_as_rehire(existing_ids: List[CPEmployee], employer_id: str) -> int:
             rehire = Employee.objects.get(crewplanner_id=cp_employee.id).staffology_id
             rehired = StaffologyEmployeeAPI().mark_rehires(employer_id, rehire)
             Employee.objects.filter(crewplanner_id=cp_employee.id).update(status="ACTIVE", staffology_id=rehired["id"])
-            rehires += 1
+            rehires.append(rehire)
         else:
             continue
     return rehires
@@ -204,19 +248,18 @@ def format_address(name: str, number: str, street: str) -> str:
     return " ".join([item for item in [name, number, street] if item is not None])
 
 
-def format_start_date(created_at: str, start_date: Union[CPCustomFieldList, None]) -> str:
+def format_start_date(created_at: str, start_date: str) -> str:
     """Chooses the start date for a cp employee"""
     if start_date is None:
         return created_at
     else:
-        date_string = start_date.name
+        date_string = start_date
         date_format = "%Y-%m-%d"
         try:
             dt.strptime(date_string, date_format)
             return date_string
         except ValueError:
             return created_at
-# TODO: test start_date after the api fix is made
 
 
 def format_marital_status(civil_status) -> str:
@@ -368,3 +411,6 @@ class StaffologyEmployeeAPI:
 
     def delete_employees(self, employer: str, employees: List[str]) -> None:
         self.post(f"/employers/{employer}/employees/delete", data=json.dumps(employees))
+
+    def update_employees(self, employer: str, employee_id: str, employee: StaffologyEmployee) -> None:
+        self.put(f"/employers/{employer}/employees/{employee_id}",  data=employee.json()).json()
