@@ -19,6 +19,10 @@ from crewpay.models import Employee, Employer, InvalidShift
 def run_payroll(request: Request):
     employer = request.GET["employer"]
     tax_year = request.GET["tax_year"]
+    return payroll_function(employer, tax_year)
+
+
+def payroll_function(employer: str, tax_year: str):
     # update employer options
     update_employer_db(employer)
     user = Employer.objects.get(id=employer).user

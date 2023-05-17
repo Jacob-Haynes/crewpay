@@ -1,6 +1,7 @@
 import pytest
 
 from api.v1.crewplanner.report import api_get_cp_report
+from api.v1.staffology.payruns import payroll_function
 from crewpay.models import CrewplannerUser, Employer
 
 
@@ -13,8 +14,8 @@ def test_report_get():
     return
 
 
-# def test_run_payroll():
-#     employer = Employer.objects.get(user__username="UK Payroll Test").id
-#     tax_year = "Year2023"
-#     run_payroll(employer, tax_year)
-#     return
+def test_run_payroll():
+    employer = Employer.objects.get(user__username="CP demo").id
+    tax_year = "Year2023"
+    payroll_function(employer, tax_year)
+    return

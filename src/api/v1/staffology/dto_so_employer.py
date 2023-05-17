@@ -5,7 +5,7 @@ from datetime import datetime as dt
 
 
 class DefaultPayOptions(BaseModel):
-    payPeriod: str
+    period: str
 
 
 class LeaveSettings(BaseModel):

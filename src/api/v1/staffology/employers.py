@@ -94,7 +94,7 @@ def staffology_employer(request) -> StaffologyEmployer:
     return StaffologyEmployer(
         name=request.POST["name"],
         defaultPayOptions=DefaultPayOptions(
-            payPeriod=request.POST["pay_period"],
+            period=request.POST["pay_period"],
         ),
         leaveSettings=leave_settings
         )

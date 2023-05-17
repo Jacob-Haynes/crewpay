@@ -147,7 +147,7 @@ def new_employee(cp_employee: CPEmployee, employer_id: str) -> None:
     new_employee_payload = cp_emp_to_staffology_emp(cp_employee, employer_id)
     created_staffology_employee = StaffologyEmployeeAPI().employee_create(employer_id, new_employee_payload)
     # create hash of employee payload for later comparison
-    payload = cp_emp_to_staffology_emp(cp_employee)
+    payload = cp_emp_to_staffology_emp(cp_employee, employer_id)
     payload_hash = consistent_hash(payload)
 
     new_entry = Employee(
@@ -351,8 +351,9 @@ def cp_emp_to_staffology_emp(cp_emp: CPEmployee, employer_id) -> StaffologyEmplo
             )
         ),
         # TODO: await address fix from mich
-        # TODO: validate bank accounts using open banking?
+        # TODO: validate bank accounts using open banking? or from staffology
         # TODO: handle staffology data rejection eg invalid national insurance
+        # TODO: Validation for if required custom fields do not exist isnt working
     )
 
 
