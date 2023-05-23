@@ -73,4 +73,3 @@ def api_get_cp_employees(stub: str, access_token: str) -> List[Dict]:  # pylint:
         cursor = response.json()["meta"]["next_cursor"]
 
     return results
-

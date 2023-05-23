@@ -8,7 +8,11 @@ from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from api.v1.staffology.dto_so_employer import StaffologyEmployer, DefaultPayOptions, LeaveSettings
+from api.v1.staffology.dto_so_employer import (
+    DefaultPayOptions,
+    LeaveSettings,
+    StaffologyEmployer,
+)
 from crewpay.models import Employer, StaffologyUser
 
 
@@ -23,7 +27,9 @@ def employers_get(request: Request) -> Response:  # pylint: disable=unused-argum
     return Response(response.json())
 
 
-def create_employer(user: User, pay_period: str, tax_year: str, period_end: str, payment_date: str, so_employer: StaffologyEmployer) -> None:
+def create_employer(
+    user: User, pay_period: str, tax_year: str, period_end: str, payment_date: str, so_employer: StaffologyEmployer
+) -> None:
     """Create a new employer in staffology and the db from their crewplanner data."""
     payload = so_employer.dict()
     employer_data = StaffologyEmployerAPI().create_employer(payload)
@@ -96,8 +102,8 @@ def staffology_employer(request) -> StaffologyEmployer:
         defaultPayOptions=DefaultPayOptions(
             period=request.POST["pay_period"],
         ),
-        leaveSettings=leave_settings
-        )
+        leaveSettings=leave_settings,
+    )
 
 
 def update_employer_db(employer_id: str) -> None:

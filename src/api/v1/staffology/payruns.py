@@ -1,5 +1,7 @@
 import itertools
 import json
+from datetime import datetime as dt
+from datetime import timedelta
 from typing import Dict, Optional
 
 from dateutil.relativedelta import relativedelta
@@ -7,13 +9,15 @@ from django.contrib.auth.decorators import user_passes_test
 from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
-from datetime import datetime as dt
-from datetime import timedelta
 
 from api.v1.crewplanner.dto_cp_ShiftsByUser import CPShiftsByUser
 from api.v1.crewplanner.report import create_shift_lines
 from api.v1.staffology.dto_so_pay_options_import import Line, PayLine
-from api.v1.staffology.employers import StaffologyEmployerAPI, activate_payruns, update_employer_db
+from api.v1.staffology.employers import (
+    StaffologyEmployerAPI,
+    activate_payruns,
+    update_employer_db,
+)
 from crewpay.models import Employee, Employer, InvalidShift
 
 
@@ -40,9 +44,9 @@ def payroll_function(employer: str, tax_year: str, arrears: int):
     # get the full payrun to edit
     pay_run = StaffologyEmployerAPI().get_pay_run(employer, tax_year, pay_period, pay_run["metadata"]["periodNumber"])
     # get shift lines from CP
-    earnings_period_start, earnings_period_end = compute_report_dates(pay_run["startDate"],
-                                                                      pay_run["endDate"],
-                                                                      pay_period, arrears)
+    earnings_period_start, earnings_period_end = compute_report_dates(
+        pay_run["startDate"], pay_run["endDate"], pay_period, arrears
+    )
     shift_lines, failed_shifts = create_shift_lines(user, earnings_period_start, earnings_period_end)
     # group by employee
     shifts_by_user = []
@@ -107,9 +111,9 @@ def compute_timedelta(pay_period: str, arrears: int) -> timedelta:
     elif pay_period == "Weekly":
         return timedelta(weeks=arrears)
     elif pay_period == "Fortnightly":
-        return timedelta(weeks=(2*arrears))
+        return timedelta(weeks=(2 * arrears))
     elif pay_period == "Four Weekly":
-        return timedelta(weeks=(4*arrears))
+        return timedelta(weeks=(4 * arrears))
     else:
         raise ValueError("Invalid pay period specified.")
 

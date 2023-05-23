@@ -1,7 +1,7 @@
 import pytest
 
 from api.v1.crewplanner.report import api_get_cp_report
-from api.v1.staffology.payruns import payroll_function, compute_report_dates
+from api.v1.staffology.payruns import compute_report_dates, payroll_function
 from crewpay.models import CrewplannerUser, Employer
 
 

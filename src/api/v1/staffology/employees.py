@@ -1,6 +1,6 @@
 import hashlib
-from datetime import datetime as dt
 import json
+from datetime import datetime as dt
 from typing import Dict, List, Optional, Union
 
 import requests
@@ -21,7 +21,6 @@ from api.v1.staffology.dto_so_employee import (
     StaffologyStarterDetails,
     StaffologyTaxAndNi,
 )
-
 from api.v1.staffology.employers import update_employer_db
 from crewpay.models import (
     CrewplannerUser,
@@ -115,8 +114,9 @@ def process_employees(employer_id: str) -> Response:  # pylint: disable=unused-a
 
 # TODO: create this report in the UI - provide a way to view this with a user login?
 
+
 def link_employee(cp_staff_list, employer_id: str) -> None:
-    """ this links an already existing staffology employee to a cp one via a csv.
+    """this links an already existing staffology employee to a cp one via a csv.
     used primarily for importing fire but could be useful."""
     staffology_list = StaffologyEmployeeAPI().staffology_employees_get(employer_id)
     for person in cp_staff_list:
@@ -156,7 +156,7 @@ def new_employee(cp_employee: CPEmployee, employer_id: str) -> None:
         staffology_id=created_staffology_employee["id"],
         payroll_code=created_staffology_employee["employmentDetails"]["payrollCode"],
         status="ACTIVE",
-        payload_hash=payload_hash
+        payload_hash=payload_hash,
     )
     new_entry.save()
 
@@ -214,8 +214,8 @@ def mark_as_rehire(existing_ids: List[CPEmployee], employer_id: str) -> List:
     rehires = []
     for cp_employee in existing_ids:
         if (
-                cp_employee.status != "ARCHIVED"
-                and Employee.objects.get(crewplanner_id=cp_employee.id).status == "ARCHIVED"
+            cp_employee.status != "ARCHIVED"
+            and Employee.objects.get(crewplanner_id=cp_employee.id).status == "ARCHIVED"
         ):
             rehire = Employee.objects.get(crewplanner_id=cp_employee.id).staffology_id
             rehired = StaffologyEmployeeAPI().mark_rehires(employer_id, rehire)
@@ -348,7 +348,7 @@ def cp_emp_to_staffology_emp(cp_emp: CPEmployee, employer_id) -> StaffologyEmplo
                 niTable=format_ni_table(age(cp_emp.date_of_birth)),
                 postgradLoan=format_postgrad_loan(cp_emp.custom_fields.payroll_postgrad_loan.name),
                 studentLoan=format_student_loan(cp_emp.custom_fields.payroll_student_loan_plan.name),
-            )
+            ),
         ),
         # TODO: await address fix from mich
         # TODO: validate bank accounts using open banking? or from staffology
@@ -414,4 +414,4 @@ class StaffologyEmployeeAPI:
         self.post(f"/employers/{employer}/employees/delete", data=json.dumps(employees))
 
     def update_employees(self, employer: str, employee_id: str, employee: StaffologyEmployee) -> None:
-        self.put(f"/employers/{employer}/employees/{employee_id}",  data=employee.json()).json()
+        self.put(f"/employers/{employer}/employees/{employee_id}", data=employee.json()).json()
