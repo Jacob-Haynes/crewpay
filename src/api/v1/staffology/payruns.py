@@ -2,10 +2,13 @@ import itertools
 import json
 from typing import Dict, Optional
 
+from dateutil.relativedelta import relativedelta
 from django.contrib.auth.decorators import user_passes_test
 from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
+from datetime import datetime as dt
+from datetime import timedelta
 
 from api.v1.crewplanner.dto_cp_ShiftsByUser import CPShiftsByUser
 from api.v1.crewplanner.report import create_shift_lines
@@ -17,12 +20,15 @@ from crewpay.models import Employee, Employer, InvalidShift
 @api_view(["GET"])
 @user_passes_test(lambda u: u.is_superuser)
 def run_payroll(request: Request):
+    """API endpoint"""
     employer = request.GET["employer"]
     tax_year = request.GET["tax_year"]
-    return payroll_function(employer, tax_year)
+    arrears = int(request.GET["period_arrears"])
+    return payroll_function(employer, tax_year, arrears)
 
 
-def payroll_function(employer: str, tax_year: str):
+def payroll_function(employer: str, tax_year: str, arrears: int):
+    """imports the earnings reports into a staffology payrun"""
     # update employer options
     update_employer_db(employer)
     user = Employer.objects.get(id=employer).user
@@ -34,13 +40,10 @@ def payroll_function(employer: str, tax_year: str):
     # get the full payrun to edit
     pay_run = StaffologyEmployerAPI().get_pay_run(employer, tax_year, pay_period, pay_run["metadata"]["periodNumber"])
     # get shift lines from CP
-    # TODO: add ui functionality
-    #  period before, 1 period in arears, 2 periods in arears
-    #  calculate start date and end date for report based on arears + start date
-    #  check we dont overlap previous by saving previous end date
-    start_date = pay_run["startDate"]
-    end_date = pay_run["endDate"]
-    shift_lines, failed_shifts = create_shift_lines(user, start_date, end_date)
+    earnings_period_start, earnings_period_end = compute_report_dates(pay_run["startDate"],
+                                                                      pay_run["endDate"],
+                                                                      pay_period, arrears)
+    shift_lines, failed_shifts = create_shift_lines(user, earnings_period_start, earnings_period_end)
     # group by employee
     shifts_by_user = []
     for user_id, shifts in itertools.groupby(shift_lines, key=lambda x: x.worker.user.id):
@@ -73,6 +76,42 @@ def payroll_function(employer: str, tax_year: str):
             "Failed Imports": failures_list,
         }
     )
+
+
+def compute_report_dates(start_date: str, end_date: str, pay_period: str, arrears: int):
+    """computes the dates required for the earnings report based on pay period and arrears"""
+    payrun_start_date = dt.strptime(start_date, "%Y-%m-%d")
+    payrun_end_date = dt.strptime(end_date, "%Y-%m-%d")
+    if arrears == 0:
+        earnings_period_start = start_date
+        earnings_period_end = end_date
+    else:
+        if pay_period == "Monthly":
+            report_start_date = payrun_start_date + relativedelta(months=-arrears)
+            report_end_date = report_start_date + relativedelta(months=1, days=-1)
+            earnings_period_start = report_start_date.strftime("%Y-%m-%d")
+            earnings_period_end = report_end_date.strftime("%Y-%m-%d")
+        else:
+            delta = compute_timedelta(pay_period, arrears)
+            report_start_date = payrun_start_date - delta
+            report_end_date = payrun_end_date - delta
+            earnings_period_start = report_start_date.strftime("%Y-%m-%d")
+            earnings_period_end = report_end_date.strftime("%Y-%m-%d")
+    return earnings_period_start, earnings_period_end
+
+
+def compute_timedelta(pay_period: str, arrears: int) -> timedelta:
+    """computes time deltas for various arrears and pay periods"""
+    if pay_period == "Daily":
+        return timedelta(days=arrears)
+    elif pay_period == "Weekly":
+        return timedelta(weeks=arrears)
+    elif pay_period == "Fortnightly":
+        return timedelta(weeks=(2*arrears))
+    elif pay_period == "Four Weekly":
+        return timedelta(weeks=(4*arrears))
+    else:
+        raise ValueError("Invalid pay period specified.")
 
 
 def create_pay_line(user_shifts: CPShiftsByUser) -> PayLine:

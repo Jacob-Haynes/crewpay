@@ -37,6 +37,15 @@
                 <option value="Year2030">2030</option>
             </select>
           </div>
+          <div class="field">
+              <label for="period_arrears">Choose how many earning periods in arrears:</label>
+              <select id="period_arrears" name="period_arrears">
+                  <option value="0">Current period</option>
+                  <option value="1">Previous period</option>
+                  <option value="2">Two periods prior</option>
+                  <option value="3">Three periods prior</option>
+              </select>
+          </div>
           {% csrf_token %}
           <button class="ui blue button" type="submit">Run</button>
       </form>
