@@ -6,3 +6,6 @@ src/crewpay/_version.py
 venv/
 dist/
 build/
+.nox/
+.pytest_cache/
+.mypy_cache

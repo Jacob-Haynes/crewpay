@@ -5,9 +5,9 @@ from django.urls import include, path
 from api.v1 import views
 from api.v1.crewplanner.employees import employees_get
 from api.v1.crewplanner.report import report_get
-from api.v1.staffology.employees import sync_employees
-from api.v1.staffology.employers import employers_get
-from api.v1.staffology.payruns import run_payroll
+from api.v1.staffology.employees.employees import sync_employees
+from api.v1.staffology.employers.employers import employers_get
+from api.v1.staffology.payroll.payruns import run_payroll
 
 urlpatterns = [
     path("", views.root),

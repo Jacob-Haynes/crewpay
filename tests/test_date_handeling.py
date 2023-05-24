@@ -1,11 +1,11 @@
-from unittest.mock import patch, Mock
+from unittest.mock import Mock, patch
 
 import pytest
 
-from api.v1.crewplanner.dto_cp_ShiftsByUser import CPShiftsByUser
-from api.v1.staffology.date_handeling import compute_report_dates
-from api.v1.staffology.dto_so_pay_options_import import PayLine, Line
-from api.v1.staffology.pay_line import create_pay_line
+from api.v1.crewplanner.dto.dto_cp_ShiftsByUser import CPShiftsByUser
+from api.v1.staffology.dto.dto_so_pay_options_import import Line, PayLine
+from api.v1.staffology.payroll.date_handeling import compute_report_dates
+from api.v1.staffology.payroll.pay_line import create_pay_line
 
 
 @patch("api.v1.staffology.pay_line.Employee")

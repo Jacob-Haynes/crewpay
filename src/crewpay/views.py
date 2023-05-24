@@ -8,17 +8,10 @@ from django.dispatch import receiver
 from django.shortcuts import redirect, render
 from rest_framework.authtoken.models import Token
 
-from api.v1.staffology.employees import sync_employees
-from api.v1.staffology.employers import create_employer, staffology_employer
+from api.v1.staffology.employers.employers import create_employer, staffology_employer
 from crewpay.forms import EmployerForm
 from crewpay.models import CrewplannerUser, Employer, StaffologyUser
 from crewpay.settings import CREWPAY_VERSION
-
-
-@receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def create_auth_token(sender, instance=None, created=False, **kwargs):
-    if created:
-        Token.objects.create(user=instance)
 
 
 def get_employer_choices():
@@ -106,8 +99,8 @@ def settings(request):
 
 @login_required(login_url="/")
 def token(request):
-    token = Token.objects.get(user__exact=request.user)
-    return render(request, "logged_in/token.html", {"token": token})
+    user_token = Token.objects.get(user__exact=request.user)
+    return render(request, "logged_in/token.html", {"token": user_token})
 
 
 @user_passes_test(lambda u: u.is_superuser)

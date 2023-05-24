@@ -7,8 +7,10 @@ from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from api.v1.crewplanner.dto_cp_employee import CPAddress, CPEmployee
+from api.v1.crewplanner.dto.dto_cp_employee import CPEmployee
 from crewpay.models import CrewplannerUser, Employer, InvalidEmployee
+
+""" Handles all employee endpoint related CrewPlanner functions """
 
 
 @api_view(["GET"])

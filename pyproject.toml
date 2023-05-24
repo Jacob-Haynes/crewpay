@@ -19,3 +19,4 @@ known_first_party = "src"
 pythonpath = [
   ".", "src",
 ]
+DJANGO_SETTINGS_MODULE = "crewpay.settings"

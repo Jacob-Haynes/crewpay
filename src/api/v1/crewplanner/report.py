@@ -7,8 +7,10 @@ from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from api.v1.crewplanner.dto_cp_shift import CPShift
+from api.v1.crewplanner.dto.dto_cp_shift import CPShift
 from crewpay.models import CrewplannerUser, Employer, InvalidShift
+
+""" Handles all report endpoint related CrewPlanner functions """
 
 
 @api_view(["GET"])
