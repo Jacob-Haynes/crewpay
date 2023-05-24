@@ -9,7 +9,7 @@ from api.v1.staffology.payroll_manager import PayrollManager
 @api_view(["GET"])
 @user_passes_test(lambda u: u.is_superuser)
 def run_payroll(request: Request) -> Response:
-    """API endpoint"""
+    """API endpoint for running payroll"""
     employer = request.GET["employer"]
     tax_year = request.GET["tax_year"]
     arrears = int(request.GET["period_arrears"])
