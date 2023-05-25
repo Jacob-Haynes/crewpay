@@ -2,10 +2,13 @@ import json
 from pathlib import Path
 
 import pytest
-from pydantic import ValidationError
+from pydantic import BaseModel, ValidationError
 
 from api.v1.crewplanner.dto.dto_cp_employee import CPEmployee
 from api.v1.crewplanner.employees import api_get_cp_employees, validate_employee
+from api.v1.staffology.api.employees import StaffologyEmployeeAPI
+from api.v1.staffology.dto.dto_so_employee import StaffologyEmployee
+from api.v1.staffology.employees.employee_manager import EmployeeManager
 from crewpay.models import CrewplannerUser
 
 
@@ -84,5 +87,4 @@ def test_employee_details_error(details_error_crewplanner_employee):
 def test_employee_lisa_hunt(lisa_hunt):
     stub = "TEST DATA"
     employee_list = [validate_employee(stub, lisa_hunt[0])]
-    return
 

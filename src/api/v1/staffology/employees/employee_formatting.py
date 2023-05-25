@@ -20,7 +20,8 @@ Handles all functions that format employee data from CP to Staffology
 
 def format_address(name: str, number: str, street: str) -> str:
     """Formats a cp address into a staffology address"""
-    return " ".join([item for item in [name, number, street] if item is not None])
+    # replace out googles U2019 char with '
+    return " ".join([item for item in [name, number, street] if item is not None]).replace("\u2019", "'")
 
 
 def format_start_date(created_at: str, start_date: str) -> str:
@@ -79,10 +80,25 @@ def format_ni_table(worker_age: int) -> str:
     return ni_table
 
 
+def format_country(cp_country: str) -> str:
+    if cp_country == "GB":
+        return "Uk"
+    elif cp_country in ["England", "NorthernIreland", "Scotland", "Wales", "Uk"]:
+        return cp_country
+    return "OutsideUk"
+
+
 def cp_emp_to_staffology_emp(cp_emp: CPEmployee, employer_id) -> StaffologyEmployee:
     """Converts a cp employee to a staffology employee data structure"""
     return StaffologyEmployee(
         personalDetails=StaffologyPersonalDetails(
+            address=StaffologyAddress(
+                line1=format_address(cp_emp.address.name, cp_emp.address.number, cp_emp.address.street),
+                line2=cp_emp.address.addition,
+                line3=cp_emp.address.city,
+                postCode=cp_emp.address.zip_code,
+                country=format_country(cp_emp.address.country),
+            ),
             firstName=cp_emp.first_name,
             lastName=cp_emp.last_name,
             dateOfBirth=cp_emp.date_of_birth,
@@ -97,13 +113,6 @@ def cp_emp_to_staffology_emp(cp_emp: CPEmployee, employer_id) -> StaffologyEmplo
             niNumber=cp_emp.registration_numbers.nino,
             passportNumber=cp_emp.registration_numbers.passport_number,
         ),
-        address=StaffologyAddress(
-            line1=format_address(cp_emp.address.name, cp_emp.address.number, cp_emp.address.street),
-            line2=cp_emp.address.addition,
-            line3=cp_emp.address.city,
-            postCode=cp_emp.address.zip_code,
-            country=cp_emp.address.country,
-        ),
         employmentDetails=StaffologyEmploymentDetails(
             payrollCode=f"cp{cp_emp.id}",
             starterDetails=StaffologyStarterDetails(
@@ -112,6 +121,7 @@ def cp_emp_to_staffology_emp(cp_emp: CPEmployee, employer_id) -> StaffologyEmplo
             ),
         ),
         bankDetails=StaffologyBankDetails(
+            accountName=" ".join([cp_emp.first_name, cp_emp.last_name]),
             accountNumber=cp_emp.bank_account.account_number,
             sortCode=cp_emp.bank_account.sort_code,
         ),
@@ -123,7 +133,6 @@ def cp_emp_to_staffology_emp(cp_emp: CPEmployee, employer_id) -> StaffologyEmplo
                 studentLoan=format_student_loan(cp_emp.custom_fields.payroll_student_loan_plan.name),
             ),
         ),
-        # TODO: await address fix from mich
         # TODO: validate bank accounts using open banking? or from staffology
         # TODO: handle staffology data rejection eg invalid national insurance
         # TODO: Validation for if required custom fields do not exist isnt working

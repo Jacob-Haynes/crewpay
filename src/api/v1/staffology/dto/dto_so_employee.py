@@ -3,7 +3,16 @@ from typing import Optional
 from pydantic import BaseModel
 
 
+class StaffologyAddress(BaseModel):
+    line1: str
+    line2: Optional[str] = None
+    line3: str
+    postCode: str
+    country: str
+
+
 class StaffologyPersonalDetails(BaseModel):
+    address: StaffologyAddress
     title: Optional[str] = None
     firstName: str
     lastName: str
@@ -20,14 +29,6 @@ class StaffologyPersonalDetails(BaseModel):
     passportNumber: Optional[str]
 
 
-class StaffologyAddress(BaseModel):
-    line1: str
-    line2: Optional[str] = None
-    line3: str
-    postCode: str
-    country: str
-
-
 class StaffologyStarterDetails(BaseModel):
     startDate: str
     starterDeclaration: str
@@ -39,6 +40,7 @@ class StaffologyEmploymentDetails(BaseModel):
 
 
 class StaffologyBankDetails(BaseModel):
+    accountName: str
     accountNumber: str
     sortCode: str
 
@@ -56,7 +58,6 @@ class StaffologyPayOptions(BaseModel):
 
 class StaffologyEmployee(BaseModel):
     personalDetails: StaffologyPersonalDetails
-    address: StaffologyAddress
     employmentDetails: StaffologyEmploymentDetails
     bankDetails: StaffologyBankDetails
     payOptions: StaffologyPayOptions

@@ -723,22 +723,22 @@
           }
         ],
         "bank_account": {
-          "id": 2769,
-          "type": "iban",
-          "iban": "DE89370400440532013000",
-          "bic": "ULSBIE2D"
+          "id": 123702,
+          "type": "account_number_sort_code",
+          "account_number": "01815753",
+          "sort_code": "01-01-01"
         },
         "address": {
           "name": null,
-          "street": "Fenchurch Street",
-          "number": "22",
+          "street": "King's Road",
+          "number": "72",
           "addition": null,
-          "zip_code": "EC3M 4BE",
-          "city": null,
+          "zip_code": "SW3 4UG",
+          "city": "London",
           "country": "GB",
-          "lat": 51.5123871,
-          "lng": -0.0793563,
-          "directions_url": "https://maps.google.com?daddr=22+Fenchurch+St%2C+London+EC3M+4BE%2C+UK&layer=t"
+          "lat": 51.4911863,
+          "lng": -0.160893,
+          "directions_url": "https://maps.google.com?daddr=King%27s+Road+72%2C+SW3+4UG+London&layer=t"
         },
         "nationality": "GB",
         "driving_license": null,
@@ -766,33 +766,28 @@
           "ice_relation": null
         },
         "custom_fields": {
-          "do_you_have_any_health_problems": [],
-          "any_serious_medical_conditions": [],
-          "if_yes": [],
-          "car": [],
-          "employee_statement": [
+          "payroll_employee_statement": [
             {
-              "id": 776,
-              "name": "A: This is my first job since 6 April and I’ve not been receiving taxable Jobseeker’s Allowance, Employment and Support Allowance, taxable Incapacity Benefit, State or Occupational Pension."
+                "id": 2199,
+                "name": "A: This is my first job since 6 April and I’ve not been receiving taxable Jobseeker’s Allowance, Employment and Support Allowance, taxable Incapacity Benefit, State or Occupational Pension."
             }
           ],
-          "student_loan_9": [
+          "payroll_student_loan_plan": [
             {
-              "id": 757,
-              "name": "No"
+                "id": 2203,
+                "name": "Plan 2"
             }
           ],
-          "student_loan_10": [],
-          "student_loan_11": [],
-          "student_loan_12": [],
-          "postgraduate_loan_13": [
+          "payroll_postgrad_loan": [
             {
-              "id": 764,
-              "name": "No"
+                "id": 2207,
+                "name": "No"
             }
           ],
-          "postgraduate_loan_14": [],
-          "postgraduate_loan_15": []
+          "payroll_start_date": null,
+          "do_you_have_any_health_problems": null,
+          "any_serious_medical_conditions": null,
+          "if_yes": null
         },
         "last_online_at": "2022-12-28T19:03:13.000000Z",
         "last_active_at": "2022-12-09T12:19:52.000000Z",
