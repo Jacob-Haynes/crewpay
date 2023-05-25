@@ -1,6 +1,6 @@
 from typing import Optional, Union
 
-from pydantic import BaseModel
+from pydantic import BaseModel, root_validator, Field
 
 
 class CPRegistrationNumber(BaseModel):
@@ -19,8 +19,28 @@ class CPAddress(BaseModel):
 
 
 class CPBankAccount(BaseModel):
-    account_number: str
-    sort_code: str
+    type_: str = Field(alias="type")
+    account_number: Optional[str] = None
+    sort_code: Optional[str] = None
+    iban: Optional[str] = None
+    bic: Optional[str] = None
+
+    @root_validator(allow_reuse=True)
+    def validator_bank_type(cls, values):
+        if values['type_'] == 'iban':
+            assert values['iban']
+            assert values['bic']
+            assert values['account_number'] is None
+            assert values['sort_code'] is None
+            return values
+        elif values['type_'] == 'account_number_sort_code':
+            assert values['sort_code']
+            assert values['account_number']
+            assert values['iban'] is None
+            assert values['bic'] is None
+            return values
+
+        raise ValueError(f"Invalid type: {values['type_']}. Type must be either 'iban', 'account_number_sort_code'")
 
 
 class CPCustomFieldList(BaseModel):

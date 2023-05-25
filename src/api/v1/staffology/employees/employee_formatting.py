@@ -1,4 +1,5 @@
 from datetime import datetime as dt
+from typing import Tuple
 
 from api.v1.crewplanner.dto.dto_cp_employee import CPEmployee
 from api.v1.staffology.dto.dto_so_employee import (
@@ -88,8 +89,23 @@ def format_country(cp_country: str) -> str:
     return "OutsideUk"
 
 
+def iban_to_bacs(iban: str) -> Tuple[str, str]:
+    # Check IBAN is a UK bank
+    if iban[:2] != "GB":
+        raise ValueError("Not a UK bank account")
+    # process sort code and account number
+    sort = iban[8:14]
+    account = iban[14:22]
+    return account, sort
+
+
 def cp_emp_to_staffology_emp(cp_emp: CPEmployee, employer_id) -> StaffologyEmployee:
     """Converts a cp employee to a staffology employee data structure"""
+    bank_data = StaffologyBankDetails(
+        accountName=" ".join([cp_emp.first_name, cp_emp.last_name]),
+        accountNumber=iban_to_bacs(cp_emp.bank_account.iban)[0] if cp_emp.bank_account.type_ == "iban" else cp_emp.bank_account.account_number,
+        sortCode=iban_to_bacs(cp_emp.bank_account.iban)[1] if cp_emp.bank_account.type_ == "iban" else cp_emp.bank_account.sort_code,
+    )
     return StaffologyEmployee(
         personalDetails=StaffologyPersonalDetails(
             address=StaffologyAddress(
@@ -120,11 +136,7 @@ def cp_emp_to_staffology_emp(cp_emp: CPEmployee, employer_id) -> StaffologyEmplo
                 starterDeclaration=cp_emp.custom_fields.payroll_employee_statement.name[0],
             ),
         ),
-        bankDetails=StaffologyBankDetails(
-            accountName=" ".join([cp_emp.first_name, cp_emp.last_name]),
-            accountNumber=cp_emp.bank_account.account_number,
-            sortCode=cp_emp.bank_account.sort_code,
-        ),
+        bankDetails=bank_data,
         payOptions=StaffologyPayOptions(
             period=Employer.objects.get(id=employer_id).pay_period,
             taxAndNi=StaffologyTaxAndNi(
@@ -133,7 +145,6 @@ def cp_emp_to_staffology_emp(cp_emp: CPEmployee, employer_id) -> StaffologyEmplo
                 studentLoan=format_student_loan(cp_emp.custom_fields.payroll_student_loan_plan.name),
             ),
         ),
-        # TODO: validate bank accounts using open banking? or from staffology
         # TODO: handle staffology data rejection eg invalid national insurance
         # TODO: Validation for if required custom fields do not exist isnt working
     )
