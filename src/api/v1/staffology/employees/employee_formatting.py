@@ -72,6 +72,7 @@ def age(dob: str) -> int:
 
 
 def format_ni_table(worker_age: int) -> str:
+    """compute ni table based on age"""
     if worker_age < 21:
         ni_table = "M"
     elif worker_age > 66:
@@ -82,6 +83,7 @@ def format_ni_table(worker_age: int) -> str:
 
 
 def format_country(cp_country: str) -> str:
+    """format country from 2 alpha code to staffology accepted vaules"""
     if cp_country == "GB":
         return "Uk"
     elif cp_country in ["England", "NorthernIreland", "Scotland", "Wales", "Uk"]:
@@ -90,10 +92,7 @@ def format_country(cp_country: str) -> str:
 
 
 def iban_to_bacs(iban: str) -> Tuple[str, str]:
-    # Check IBAN is a UK bank
-    if iban[:2] != "GB":
-        raise ValueError("Not a UK bank account")
-    # process sort code and account number
+    """converts a gb iban to bacs"""
     sort = iban[8:14]
     account = iban[14:22]
     return account, sort
@@ -103,8 +102,12 @@ def cp_emp_to_staffology_emp(cp_emp: CPEmployee, employer_id) -> StaffologyEmplo
     """Converts a cp employee to a staffology employee data structure"""
     bank_data = StaffologyBankDetails(
         accountName=" ".join([cp_emp.first_name, cp_emp.last_name]),
-        accountNumber=iban_to_bacs(cp_emp.bank_account.iban)[0] if cp_emp.bank_account.type_ == "iban" else cp_emp.bank_account.account_number,
-        sortCode=iban_to_bacs(cp_emp.bank_account.iban)[1] if cp_emp.bank_account.type_ == "iban" else cp_emp.bank_account.sort_code,
+        accountNumber=iban_to_bacs(cp_emp.bank_account.iban)[0]
+        if cp_emp.bank_account.type_ == "iban"
+        else cp_emp.bank_account.account_number,
+        sortCode=iban_to_bacs(cp_emp.bank_account.iban)[1]
+        if cp_emp.bank_account.type_ == "iban"
+        else cp_emp.bank_account.sort_code,
     )
     return StaffologyEmployee(
         personalDetails=StaffologyPersonalDetails(
@@ -145,6 +148,4 @@ def cp_emp_to_staffology_emp(cp_emp: CPEmployee, employer_id) -> StaffologyEmplo
                 studentLoan=format_student_loan(cp_emp.custom_fields.payroll_student_loan_plan.name),
             ),
         ),
-        # TODO: handle staffology data rejection eg invalid national insurance
-        # TODO: Validation for if required custom fields do not exist isnt working
     )

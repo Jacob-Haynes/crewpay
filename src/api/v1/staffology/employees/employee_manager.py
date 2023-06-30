@@ -1,5 +1,6 @@
+import json
 from dataclasses import dataclass, field
-from typing import List
+from typing import List, Dict
 
 from rest_framework.response import Response
 
@@ -81,31 +82,25 @@ class EmployeeManager:
             {
                 "employee_id": failure.employee_id,
                 "name": failure.name,
-                "error": failure.error,
+                "error": json.loads(failure.error),
                 "date_time": failure.date_time,
             }
             for failure in failures
         ]
 
-    def run(self):
+    def run(self) -> Dict:
         """wrapper function"""
         self.get_cp_employees()
         self.get_stored_cp_employee_ids()
         self.process_employees()
-
-        return Response(
-            {
-                "Employees Added": self.new_employee_count,
-                "Failed to Sync": self.failed_employees,
-                "Marked as Leaver": len(self.leavers),
-                "Marked as Rehired": len(self.rehires),
-                "Deleted Employees": len(self.deleted),
-                "Updated Employees": len(self.employees_to_update),
-                "Failed Syncs": self.failures_list,
+        return {
+                "employees_added": self.new_employee_count,
+                "failed_to_sync": self.failed_employees,
+                "marked_as_leaver": len(self.leavers),
+                "marked_as_rehired": len(self.rehires),
+                "deleted_employees": len(self.deleted),
+                "updated_employees": len(self.employees_to_update),
+                "failed_syncs": self.failures_list,
             }
-        )
 
 
-# Usage
-# processor = EmployeeProcessor(employer_id)
-# response = processor.run()

@@ -8,11 +8,12 @@ from django.dispatch import receiver
 from django.shortcuts import redirect, render
 from rest_framework.authtoken.models import Token
 
+from api.v1.staffology.employees.sync import sync_employees
 from api.v1.staffology.employers.employers import create_employer, staffology_employer
 from crewpay.forms import EmployerForm
 from crewpay.models import CrewplannerUser, Employer, StaffologyUser
 from crewpay.settings import CREWPAY_VERSION
-
+from markupsafe import Markup
 
 def get_employer_choices():
     """Used for populating the employer selector dropdown."""
@@ -136,3 +137,28 @@ def create_staffology_user(request):
         new_staffology_user = StaffologyUser(user=request.user, staffology_key=request.POST["staffology_key"])
         new_staffology_user.save()
         return redirect("/?staffology_connected_success=true")
+
+
+def to_camel_case(snake_str):
+    return " ".join(x.capitalize() for x in snake_str.lower().split("_"))
+
+@user_passes_test(lambda u: u.is_superuser)
+def sync_employees_view(request: WSGIRequest):
+    # get employer
+    employer = request.GET["employer"]
+    result = sync_employees(employer)
+
+    formatted_failures = []
+    for failures in result['failed_syncs']:
+        formatted_employee_failures = []
+        for employee_failures in failures['error']:
+            errors = f"<b>{to_camel_case(employee_failures['loc'][-1])}</b>:<br> &emsp; {employee_failures['msg']}"
+            formatted_employee_failures.append(errors)
+
+        failures['error'] = Markup('<br>'.join(formatted_employee_failures))
+        formatted_failures.append(failures)
+
+    context = {
+        'response_data': result
+    }
+    return render(request, "logged_in/sync.html", context)

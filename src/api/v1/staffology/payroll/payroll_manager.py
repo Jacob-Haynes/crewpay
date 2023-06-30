@@ -1,4 +1,5 @@
 import itertools
+from typing import Dict
 
 from api.v1.crewplanner.dto.dto_cp_ShiftsByUser import CPShiftsByUser
 from api.v1.crewplanner.report import create_shift_lines
@@ -87,7 +88,7 @@ class PayrollManager:
             failures_list.append(failure_dict)
         return failures_list
 
-    def process_payroll(self):
+    def process_payroll(self) -> Dict:
         """wrapper function"""
         self.update_employer()
         schedule_to_run = self.get_pay_schedule()

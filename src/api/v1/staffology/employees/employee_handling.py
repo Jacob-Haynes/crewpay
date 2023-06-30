@@ -4,6 +4,7 @@ from typing import List
 from api.v1.crewplanner.dto.dto_cp_employee import CPEmployee
 from api.v1.staffology.api.employees import StaffologyEmployeeAPI
 from api.v1.staffology.dto.dto_so_employee import StaffologyEmployee
+from api.v1.staffology.dto.dto_so_employee_full import StaffologyEmployeeFull
 from api.v1.staffology.employees.employee_formatting import cp_emp_to_staffology_emp
 from crewpay.models import Employee
 
@@ -18,25 +19,30 @@ def link_employee(cp_staff_list, employer_id: str) -> None:
     staffology_list = StaffologyEmployeeAPI().staffology_employees_get(employer_id)
     for person in cp_staff_list:
         payroll_code = person["payroll_code"]
-        for staff in staffology_list:
-            if staff["metadata"]["payrollCode"] == payroll_code and person["status"] == "Active":
-                new_entry = Employee(
-                    employer_id=employer_id,
-                    crewplanner_id=person["id"],
-                    staffology_id=staff["id"],
-                    payroll_code=payroll_code,
-                    status="ACTIVE",
-                )
-                new_entry.save()
-            elif staff["metadata"]["payrollCode"] == payroll_code:
-                new_entry = Employee(
-                    employer_id=employer_id,
-                    crewplanner_id=person["id"],
-                    staffology_id=staff["id"],
-                    payroll_code=payroll_code,
-                    status="ARCHIVED",
-                )
-                new_entry.save()
+        if Employee.objects.filter(employer=employer_id, payroll_code=payroll_code).exists():
+            continue
+        else:
+            for staff in staffology_list:
+                if staff["metadata"]["payrollCode"] == payroll_code and person["status"] == "Active":
+                    new_entry = Employee(
+                        employer_id=employer_id,
+                        crewplanner_id=person["id"],
+                        staffology_id=staff["id"],
+                        payroll_code=payroll_code,
+                        status="ACTIVE",
+                    )
+                    print(new_entry)
+                    new_entry.save()
+                elif staff["metadata"]["payrollCode"] == payroll_code:
+                    new_entry = Employee(
+                        employer_id=employer_id,
+                        crewplanner_id=person["id"],
+                        staffology_id=staff["id"],
+                        payroll_code=payroll_code,
+                        status="ARCHIVED",
+                    )
+                    print(new_entry)
+                    new_entry.save()
 
 
 def new_employee(cp_employee: CPEmployee, employer_id: str) -> None:
@@ -58,13 +64,50 @@ def new_employee(cp_employee: CPEmployee, employer_id: str) -> None:
     new_entry.save()
 
 
+def update_so_fields(so_full: StaffologyEmployeeFull, update_data: StaffologyEmployee) -> StaffologyEmployeeFull:
+    """Updates fields in staffology object that can be changed from CP data"""
+    fields_to_update = [
+        "accountNumber",
+        "sortCode",
+        "line1",
+        "line2",
+        "line3",
+        "postCode",
+        "country",
+        "maritalStatus",
+        "email",
+        "photoUrl",
+        "telephone",
+    ]
+
+    for field in fields_to_update:
+        if hasattr(update_data.bankDetails, field):
+            setattr(so_full.bankDetails, field, getattr(update_data.bankDetails, field))
+        if hasattr(update_data.personalDetails.address, field):
+            setattr(so_full.personalDetails.address, field, getattr(update_data.personalDetails.address, field))
+        if hasattr(update_data.personalDetails, field):
+            setattr(so_full.personalDetails, field, getattr(update_data.personalDetails, field))
+
+    return so_full
+
+
 def update_employee(cp_employee: CPEmployee, employer_id: str) -> None:
     """Updates employee data in staffology"""
     employee = Employee.objects.get(crewplanner_id=cp_employee.id)
-    updated_payload = cp_emp_to_staffology_emp(cp_employee, employer_id)
+
+    # Retrieve the existing staffology employee data and populate object
+    staffology_employee = StaffologyEmployeeAPI().staffology_employee_get(employer_id, employee.staffology_id)
+    so_employee_full = StaffologyEmployeeFull(**staffology_employee)
+
+    # Overwrite the relevant fields with the updated data from cp_employee
+    update_data = cp_emp_to_staffology_emp(cp_employee, employer_id)
+    updated_payload = update_so_fields(so_employee_full, update_data)
+
+    # Update the employee data using the updated payload
     StaffologyEmployeeAPI().update_employees(employer_id, employee.staffology_id, updated_payload)
-    # update hash of employee
-    payload_hash = consistent_hash(updated_payload)
+
+    # Update the hash of the employee using the cp payload only
+    payload_hash = consistent_hash(update_data)
     employee.payload_hash = payload_hash
     employee.save()
 

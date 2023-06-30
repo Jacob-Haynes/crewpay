@@ -1,0 +1,127 @@
+{
+  "id": "4ad24c7d-0dd0-4355-a582-65b73a210dae",
+  "personalDetails": {
+    "address": {
+      "line1": "72 King's Road",
+      "line3": "London",
+      "postCode": "SW3 4UG",
+      "country": "Uk"
+    },
+    "maritalStatus": "Unknown",
+    "firstName": "Lisa",
+    "lastName": "Hunt",
+    "email": "ftworker2@yopmail.com",
+    "emailPayslip": true,
+    "passwordProtectPayslip": true,
+    "pdfPasswordType": "InitialsAndDob",
+    "emailStatement": false,
+    "photoUrl": "https://s3.eu-west-1.amazonaws.com/public.crewplanner.production/profile-pictures/3090/conversions/1c092f139b0a8e1063edb9c698a5b83e-small.jpg",
+    "telephone": "+441234567890",
+    "dateOfBirth": "1986-03-21",
+    "statePensionAge": 68,
+    "gender": "Female",
+    "niNumber": ""
+  },
+  "employmentDetails": {
+    "cisSubContractor": false,
+    "payrollCode": "cp6646",
+    "onHold": false,
+    "onFurlough": false,
+    "isApprentice": false,
+    "starterDetails": {
+      "startDate": "2019-02-14",
+      "starterDeclaration": "A",
+      "pensionerPayroll": {
+        "inReceiptOfPension": false,
+        "bereaved": false,
+        "amount": 0
+      }
+    },
+    "roles": [
+      {
+        "id": "6a81f602-41d4-4ab1-b7d8-a0d01894f9ad",
+        "name": "cp6646",
+        "metadata": {
+          "isPrimary": true,
+          "roleReference": "cp6646",
+          "startDate": "2019-02-14",
+          "basis": "NotApplicable",
+          "type": "NotApplicable"
+        },
+        "url": "/employers/6f40b022-34a9-43bd-a984-9eebd9093d85/employees/4ad24c7d-0dd0-4355-a582-65b73a210dae/roles/6a81f602-41d4-4ab1-b7d8-a0d01894f9ad"
+      }
+    ],
+    "isWorkingInFreePort": false,
+    "includeSecondedInfoOnStarter": true
+  },
+  "autoEnrolment": {
+    "state": "Automatic",
+    "ukWorker": "Yes",
+    "daysToDeferAssessment": 0,
+    "deferByMonthsNotDays": false,
+    "exempt": false,
+    "aeExclusionCode": "NotKnown",
+    "aePostponementLetterSent": false
+  },
+  "leaveSettings": {
+    "useDefaultHolidayType": true,
+    "useDefaultAllowanceResetDate": true,
+    "useDefaultAllowance": false,
+    "useDefaultAccruePaymentInLieu": false,
+    "useDefaultAccruePaymentInLieuRate": true,
+    "useDefaultAccruePaymentInLieuAllGrossPay": true,
+    "useDefaultAccruePaymentInLieuPayAutomatically": true,
+    "useDefaultAccrueHoursPerDay": true,
+    "allowanceResetDate": "2024-05-25",
+    "allowance": 0,
+    "allowanceUsed": 0,
+    "allowanceUsedPreviousPeriod": 0,
+    "allowanceRemaining": 0,
+    "holidayType": "Accrual_Money",
+    "accrueSetAmount": false,
+    "accrueHoursPerDay": 0,
+    "accruePaymentInLieuRate": 12.07,
+    "accruePaymentInLieuAllGrossPay": true,
+    "accruePaymentInLieuPayAutomatically": false,
+    "accruedPaymentLiability": 0,
+    "accruedPaymentAdjustment": 0,
+    "accruedPaymentPaid": 0,
+    "accruedPaymentBalance": 0
+  },
+  "bankDetails": {
+    "accountName": "Lisa Hunt",
+    "accountNumber": "01815753",
+    "sortCode": "01-01-01"
+  },
+  "payOptions": {
+    "period": "Fortnightly",
+    "ordinal": 1,
+    "payAmount": 0,
+    "basis": "Monthly",
+    "nationalMinimumWage": false,
+    "payAmountMultiplier": 0,
+    "baseHourlyRate": 0,
+    "baseDailyRate": 0,
+    "autoAdjustForLeave": true,
+    "method": "Credit",
+    "withholdTaxRefundIfPayIsZero": false,
+    "taxAndNi": {
+      "niTable": "A",
+      "secondaryClass1NotPayable": false,
+      "postgradLoan": false,
+      "studentLoan": "PlanTwo",
+      "taxCode": "1257L",
+      "week1Month1": false,
+      "foreignTaxCredit": false
+    },
+    "fpsFields": {
+      "offPayrollWorker": false,
+      "irregularPaymentPattern": false,
+      "nonIndividual": false,
+      "hoursNormallyWorked": "MoreThan30"
+    },
+    "regularPayLines": []
+  },
+  "status": "Current",
+  "aeNotEnroledWarning": false
+}

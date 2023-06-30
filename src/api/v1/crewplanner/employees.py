@@ -1,3 +1,4 @@
+import json
 from typing import Dict, List, Optional
 
 import requests
@@ -37,16 +38,18 @@ def validate_employee(stub: str, employee: Dict) -> Optional[CPEmployee]:
     try:
         for field in ["payroll_employee_statement", "payroll_student_loan_plan", "payroll_postgrad_loan"]:
             field_value = employee["custom_fields"].get(field, [])
-            employee["custom_fields"][field] = field_value[0] if field_value is not None else None
+            if isinstance(field_value, list) and len(field_value) > 0:
+                employee["custom_fields"][field] = field_value[0]
+            else:
+                employee["custom_fields"][field] = None
         cp_employee = CPEmployee(**employee)
         return cp_employee
     except ValidationError as e:
-        error = str(e)
         name = f"{employee['first_name']} {employee['last_name']}"
         invalid_employee = InvalidEmployee(
             employee_id=employee["id"],
             name=name,
-            error=error,
+            error=json.dumps(e.errors()),
             employer=Employer.objects.get(user__crewplanner_user__stub=stub),
         )
         invalid_employee.save()

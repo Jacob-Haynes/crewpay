@@ -8,7 +8,7 @@
 
       <h1> Sync Employees </h1>
 
-      <form class="ui form" action="/api/v1/staffology/sync_employees" method="get">
+      <form class="ui form" action="{% url 'sync' %}" method="get">
         <div class="field">
             {{ employer_selector }}
         </div>

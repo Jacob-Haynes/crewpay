@@ -29,7 +29,8 @@ urlpatterns = [
     path("token", views.token, name="token"),
     path("login", views.login_view, name="login"),
     path("logout", views.logout_view, name="logout"),
-    path("api/v1/", include("api.v1.urls")),
     path("user/create/", views.create_user, name="create_user"),
-    path("user/connect/staffology", views.create_staffology_user),
+    path("user/connect/staffology", views.create_staffology_user, name="create_staffology_user"),
+    path("sync", views.sync_employees_view, name="sync"),
+    path("api/v1/", include("api.v1.urls")),
 ]
