@@ -13,5 +13,3 @@ def sync_employees_get(request: Request) -> Response:
     employer = request.GET["employer"]
     return Response(sync_employees(employer))
 
-
-# TODO: create this report in the UI - provide a way to view this with a user login?

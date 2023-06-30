@@ -15,3 +15,5 @@ def run_payroll_get(request: Request) -> Response:
     arrears = int(request.GET["period_arrears"])
     result = run_payroll(employer, tax_year, arrears)
     return Response(result)
+
+# TODO: payrun table UI

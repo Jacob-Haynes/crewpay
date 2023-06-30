@@ -13,19 +13,6 @@ from crewpay.models import CrewplannerUser, Employer, InvalidShift
 """ Handles all report endpoint related CrewPlanner functions """
 
 
-@api_view(["GET"])
-@user_passes_test(lambda u: u.is_superuser)
-def report_get(request: Request) -> Response:  # pylint: disable=unused-argument
-    """Gets a specified CrewPlanner report. This is used by admin users for problem-solving."""
-    employer = request.query_params["employer"]
-    user = Employer.objects.get(id=employer).user
-    start_date = request.query_params["start_date"]
-    end_date = request.query_params["end_date"]
-    access_token = CrewplannerUser.objects.get(user=user).access_key
-    stub = CrewplannerUser.objects.get(user=user).stub
-    return Response(api_get_cp_report(stub, access_token, start_date, end_date))
-
-
 def api_get_cp_report(stub: str, access_token: str, start_date: str, end_date: str) -> List[Dict]:
     """Gets reports from the CrewPlanner API."""
     response = requests.get(
