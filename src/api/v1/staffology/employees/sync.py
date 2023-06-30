@@ -1,6 +1,5 @@
 from typing import Dict
 
-
 from api.v1.staffology.employees.employee_manager import EmployeeManager
 from api.v1.staffology.employers.employers import update_employer_db
 

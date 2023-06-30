@@ -1,4 +1,5 @@
 from typing import Dict
+
 from rest_framework.authtoken.admin import User
 
 from api.v1.staffology.api.employers import StaffologyEmployerAPI

@@ -12,4 +12,3 @@ def sync_employees_get(request: Request) -> Response:
     """API endpoint for syncing employees"""
     employer = request.GET["employer"]
     return Response(sync_employees(employer))
-

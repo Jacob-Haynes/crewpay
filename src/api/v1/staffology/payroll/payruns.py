@@ -8,3 +8,5 @@ def run_payroll(employer, tax_year, arrears) -> Dict:
     manager = PayrollManager(employer=employer, tax_year=tax_year, arrears=arrears)
     result = manager.process_payroll()
     return result
+
+# TODO: check the payrun uses correct default settings for the employee

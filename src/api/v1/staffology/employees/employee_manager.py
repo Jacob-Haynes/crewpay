@@ -1,6 +1,6 @@
 import json
 from dataclasses import dataclass, field
-from typing import List, Dict
+from typing import Dict, List
 
 from rest_framework.response import Response
 
@@ -94,13 +94,11 @@ class EmployeeManager:
         self.get_stored_cp_employee_ids()
         self.process_employees()
         return {
-                "employees_added": self.new_employee_count,
-                "failed_to_sync": self.failed_employees,
-                "marked_as_leaver": len(self.leavers),
-                "marked_as_rehired": len(self.rehires),
-                "deleted_employees": len(self.deleted),
-                "updated_employees": len(self.employees_to_update),
-                "failed_syncs": self.failures_list,
-            }
-
-
+            "employees_added": self.new_employee_count,
+            "failed_to_sync": self.failed_employees,
+            "marked_as_leaver": len(self.leavers),
+            "marked_as_rehired": len(self.rehires),
+            "deleted_employees": len(self.deleted),
+            "updated_employees": len(self.employees_to_update),
+            "failed_syncs": self.failures_list,
+        }
