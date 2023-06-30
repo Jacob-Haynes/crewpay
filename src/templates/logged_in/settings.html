@@ -36,37 +36,5 @@
     </form>
     <br>
 
-    <h1> Connect Staffology </h1>
-
-    <div>
-        {% if staffology_connected_already %}
-        <div class="ui icon warning message">
-            <i class="exclamation icon"></i>
-            <div class="content">
-                <div class="header">
-                    Staffology Already Connected!
-                </div>
-            </div>
-        </div>
-        {% elif staffology_connected_success %}
-        <div class="ui icon positive message">
-            <i class="plus icon"></i>
-            <div class="content">
-                <div class="header">
-                    Staffology Connected!
-                </div>
-            </div>
-        </div>
-        {% endif %}
-    </div>
-    <div>
-        <form class="ui form" action="/user/connect/staffology" method="post">
-            <div class="field">
-                <input type="text" name="staffology_key" placeholder="API Key..."><br>
-            </div>
-            {% csrf_token %}
-            <button class="ui blue button" type="submit">Connect</button>
-        </form>
-    </div>
   </div>
 </div>

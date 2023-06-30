@@ -6,7 +6,6 @@ from crewpay.models import (
     Employer,
     InvalidEmployee,
     InvalidShift,
-    StaffologyUser,
 )
 
 
@@ -15,7 +14,6 @@ class TimeAdmin(admin.ModelAdmin):
 
 
 admin.site.register(CrewplannerUser)
-admin.site.register(StaffologyUser)
 admin.site.register(Employer)
 admin.site.register(Employee)
 admin.site.register(InvalidEmployee, TimeAdmin)

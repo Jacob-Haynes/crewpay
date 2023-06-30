@@ -1,11 +1,7 @@
 from typing import Dict, List, Optional, Tuple
 
 import requests
-from django.contrib.auth.decorators import user_passes_test
 from pydantic import ValidationError
-from rest_framework.decorators import api_view
-from rest_framework.request import Request
-from rest_framework.response import Response
 
 from api.v1.crewplanner.dto.dto_cp_shift import CPShift
 from crewpay.models import CrewplannerUser, Employer, InvalidShift
@@ -39,7 +35,7 @@ def api_get_cp_report(stub: str, access_token: str, start_date: str, end_date: s
     return results
 
 
-def create_shift_lines(user, start_date: str, end_date: str) -> Tuple[List[Optional[CPShift]], int]:
+def create_shift_lines(user, start_date: str, end_date: str) -> Tuple[List[CPShift], int]:
     """Gets a CP report and creates a list of CPShift objects."""
     employer = Employer.objects.get(user=user).id
     stub = CrewplannerUser.objects.get(user=user).stub
@@ -47,7 +43,7 @@ def create_shift_lines(user, start_date: str, end_date: str) -> Tuple[List[Optio
     cp_report = api_get_cp_report(stub, access_key, start_date, end_date)
     shift_lines = [validate_shift_line(employer, shift) for shift in cp_report]
     failures = len(cp_report) - len(shift_lines)
-    return shift_lines, failures
+    return [shift for shift in shift_lines if shift is not None], failures
 
 
 def validate_shift_line(employer: str, shift: Dict) -> Optional[CPShift]:

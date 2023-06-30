@@ -1,7 +1,8 @@
 import itertools
-from typing import Dict
+from typing import Dict, List
 
 from api.v1.crewplanner.dto.dto_cp_ShiftsByUser import CPShiftsByUser
+from api.v1.crewplanner.dto.dto_cp_shift import CPShift
 from api.v1.crewplanner.report import create_shift_lines
 from api.v1.staffology.api.employers import StaffologyEmployerAPI
 from api.v1.staffology.employers.employers import activate_payruns, update_employer_db
@@ -19,7 +20,7 @@ class PayrollManager:
         self.user = None
         self.pay_period = None
         self.pay_run = None
-        self.shift_lines = []
+        self.shift_lines: List[CPShift] = []
         self.failed_shifts = 0
         self.pay_lines = []
 
