@@ -1,40 +1,38 @@
-from typing import List, Optional
-
-from pydantic import BaseModel, Field, root_validator
+from pydantic import BaseModel, Field
 
 
 class CustomFields(BaseModel):
-    open_field: Optional[str]
-    single_option: Optional[dict]
-    multiple_options: Optional[List[dict]]
+    open_field: str | None
+    single_option: dict | None
+    multiple_options: list[dict] | None
 
 
 class Address(BaseModel):
     id: int
-    name: Optional[str]
-    street: Optional[str]
-    number: Optional[str]
+    name: str | None
+    street: str | None
+    number: str | None
     zip_code: str
-    city: Optional[str]
-    country: Optional[str]
-    lat: Optional[str]
-    lng: Optional[str]
+    city: str | None
+    country: str | None
+    lat: str | None
+    lng: str | None
 
 
 class Company(BaseModel):
     id: int
     name: str
-    vat_number: Optional[str]
-    custom_fields: Optional[CustomFields]
-    address: Optional[Address]
+    vat_number: str | None
+    custom_fields: CustomFields | None
+    address: Address | None
 
 
 class Department(BaseModel):
     id: int
-    group: Optional[dict]
-    name: Optional[str]
-    full_name: Optional[str]
-    custom_fields: Optional[dict]
+    group: dict | None
+    name: str | None
+    full_name: str | None
+    custom_fields: dict | None
 
 
 class Function(BaseModel):
@@ -48,17 +46,17 @@ class User(BaseModel):
     last_name: str
     email: str
     date_of_birth: str
-    employee_number: Optional[str]
-    nino: Optional[str]
-    bank_account: Optional[dict]
-    civil_status: Optional[dict]
-    custom_fields: Optional[dict]
+    employee_number: dict | None
+    nino: dict | None
+    bank_account: dict | None
+    civil_status: dict | None
+    custom_fields: dict | None
 
 
 class Worker(BaseModel):
     id: int
     name: str
-    phone_number: Optional[str]
+    phone_number: str | None
     contract_type: str
     user: User
 
@@ -85,33 +83,33 @@ class Registered(BaseModel):
     start: str
     end: str
     gross_minutes: int
-    break_: Optional[int] = Field(alias="break")
+    break_: int | None = Field(alias="break")
     netto_minutes: int
 
 
 class Timesheet(BaseModel):
     planned: Planned
-    clocked: Optional[Clocked]
+    clocked: Clocked | None
     registered: Registered
 
 
 class Wage(BaseModel):
     type_: str = Field(alias="type")
     value: float
-    day_rate_max_hours: Optional[int]
+    day_rate_max_hours: int | None
     total: float
 
 
 class Cost(BaseModel):
-    type_: Optional[str] = Field(alias="type")
-    value: Optional[float]
-    day_rate_max_hours: Optional[int]
-    total: Optional[float]
+    type_: str | None = Field(alias="type")
+    value: float | None
+    day_rate_max_hours: int | None
+    total: float | None
 
 
 class Payout(BaseModel):
-    estimated_earnings: Optional[float]
-    advance: Optional[float]
+    estimated_earnings: float | None
+    advance: float | None
 
 
 class Project(BaseModel):
@@ -128,19 +126,19 @@ class CPShift(BaseModel):
     present: bool
     worker: Worker
     timesheet: Timesheet
-    wage: Optional[Wage]
-    cost: Optional[Cost]
-    payout: Optional[Payout]
+    wage: Wage | None
+    cost: Cost | None
+    payout: Payout | None
 
 
 class Totals(BaseModel):
-    workers: Optional[int]
-    projects: Optional[int]
-    slots: Optional[int]
-    companies: Optional[int]
-    days: Optional[int]
-    hours: Optional[float]
-    travel_distance: Optional[float]
+    workers: int | None
+    projects: int | None
+    slots: int | None
+    companies: int | None
+    days: int | None
+    hours: float | None
+    travel_distance: float | None
 
 
 class CPReportMeta(BaseModel):

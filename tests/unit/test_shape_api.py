@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 
@@ -6,11 +6,11 @@ from api.v1.shape.api.base import ShapeAPI
 
 
 @pytest.fixture
-def shape_api():
+def fixture_shape_api() -> ShapeAPI:
     return ShapeAPI()
 
 
-def test_get_token_success(shape_api):
+def test_get_token_success(fixture_shape_api: ShapeAPI) -> None:
     mock_response = MagicMock()
     mock_response.status_code = 200
     mock_response.json.return_value = {
@@ -19,116 +19,117 @@ def test_get_token_success(shape_api):
     }
 
     with patch('requests.post', return_value=mock_response):
-        shape_api._get_token()
+        access_token = fixture_shape_api._get_token()
 
-    assert shape_api.access_token == 'dummy_token'
+    assert access_token == 'dummy_token'
 
 
-def test_get_token_failure(shape_api):
+def test_get_token_failure(fixture_shape_api: ShapeAPI) -> None:
     mock_response = MagicMock()
     mock_response.status_code = 500
     mock_response.json.return_value = {'error': 'Invalid credentials'}
 
     with patch('requests.post', return_value=mock_response):
         with pytest.raises(Exception):
-            shape_api._get_token()
+            fixture_shape_api._get_token()
 
 
-def test_get_headers(shape_api):
-    shape_api.access_token = 'dummy_token'
-    headers = shape_api._get_headers()
+@patch.object(ShapeAPI, "_get_token")
+def test_get_headers(mock_get_token: Mock, fixture_shape_api: ShapeAPI) -> None:
+    mock_get_token.return_value = 'dummy_token'
+    headers = fixture_shape_api._get_headers()
     assert headers == {'Authorization': 'Bearer dummy_token'}
 
 
-def test_get_success(shape_api):
+def test_get_success(fixture_shape_api: ShapeAPI) -> None:
     mock_response = MagicMock()
     mock_response.status_code = 200
 
     with patch('requests.get', return_value=mock_response):
-        response = shape_api._get('/endpoint')
+        response = fixture_shape_api._get('/endpoint')
 
     assert response.status_code == 200
 
 
-def test_get_failure(shape_api):
+def test_get_failure(fixture_shape_api: ShapeAPI) -> None:
     mock_response = MagicMock()
     mock_response.status_code = 404
     mock_response.raise_for_status.side_effect = Exception('Not found')
 
     with patch('requests.get', return_value=mock_response):
         with pytest.raises(Exception):
-            shape_api._get('/endpoint')
+            fixture_shape_api._get('/endpoint')
 
 
-def test_post_success(shape_api):
+def test_post_success(fixture_shape_api: ShapeAPI) -> None:
     mock_response = MagicMock()
     mock_response.status_code = 201
 
     with patch('requests.post', return_value=mock_response) as mock_post:
-        response = shape_api._post('/endpoint', data={'key': 'value'})
+        response = fixture_shape_api._post('/endpoint', data={'key': 'value'})
 
     assert response.status_code == 201
     mock_post.assert_called_once_with(
-        shape_api.base_url + '/endpoint',
+        fixture_shape_api.base_url + '/endpoint',
         json={'key': 'value'},
-        headers=shape_api._get_headers()
+        headers=fixture_shape_api._get_headers()
     )
 
 
-def test_post_failure(shape_api):
+def test_post_failure(fixture_shape_api: ShapeAPI) -> None:
     mock_response = MagicMock()
     mock_response.status_code = 500
     mock_response.raise_for_status.side_effect = Exception('Server error')
 
     with patch('requests.post', return_value=mock_response):
         with pytest.raises(Exception):
-            shape_api._post('/endpoint', data={'key': 'value'})
+            fixture_shape_api._post('/endpoint', data={'key': 'value'})
 
 
-def test_patch_success(shape_api):
+def test_patch_success(fixture_shape_api: ShapeAPI) -> None:
     mock_response = MagicMock()
     mock_response.status_code = 200
 
     with patch('requests.patch', return_value=mock_response) as mock_patch:
-        response = shape_api._patch('/endpoint', data={'key': 'value'})
+        response = fixture_shape_api._patch('/endpoint', data={'key': 'value'})
 
     assert response.status_code == 200
     mock_patch.assert_called_once_with(
-        shape_api.base_url + '/endpoint',
+        fixture_shape_api.base_url + '/endpoint',
         json={'key': 'value'},
-        headers=shape_api._get_headers()
+        headers=fixture_shape_api._get_headers()
     )
 
 
-def test_patch_failure(shape_api):
+def test_patch_failure(fixture_shape_api: ShapeAPI) -> None:
     mock_response = MagicMock()
     mock_response.status_code = 404
     mock_response.raise_for_status.side_effect = Exception('Not found')
 
     with patch('requests.patch', return_value=mock_response):
         with pytest.raises(Exception):
-            shape_api._patch('/endpoint', data={'key': 'value'})
+            fixture_shape_api._patch('/endpoint', data={'key': 'value'})
 
 
-def test_delete_success(shape_api):
+def test_delete_success(fixture_shape_api: ShapeAPI) -> None:
     mock_response = MagicMock()
     mock_response.status_code = 204
 
     with patch('requests.delete', return_value=mock_response) as mock_delete:
-        response = shape_api._delete('/endpoint')
+        response = fixture_shape_api._delete('/endpoint')
 
     assert response.status_code == 204
     mock_delete.assert_called_once_with(
-        shape_api.base_url + '/endpoint',
-        headers=shape_api._get_headers()
+        fixture_shape_api.base_url + '/endpoint',
+        headers=fixture_shape_api._get_headers()
     )
 
 
-def test_delete_failure(shape_api):
+def test_delete_failure(fixture_shape_api: ShapeAPI) -> None:
     mock_response = MagicMock()
     mock_response.status_code = 403
     mock_response.raise_for_status.side_effect = Exception('Forbidden')
 
     with patch('requests.delete', return_value=mock_response):
         with pytest.raises(Exception):
-            shape_api._delete('/endpoint')
+            fixture_shape_api._delete('/endpoint')

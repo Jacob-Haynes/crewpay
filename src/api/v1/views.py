@@ -4,5 +4,5 @@ from rest_framework.response import Response
 
 
 @api_view(["GET"])
-def root(request: Request) -> Response:
+def root(request: Request) -> Response:  # pylint: disable=unused-argument
     return Response({"body": "text"})

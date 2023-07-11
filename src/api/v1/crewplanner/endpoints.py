@@ -9,7 +9,7 @@ from crewpay.models import CrewplannerUser, Employer
 
 
 @api_view(["GET"])
-@user_passes_test(lambda u: u.is_superuser)
+@user_passes_test(lambda u: u.is_superuser)  # type: ignore[union-attr]
 def employees_get(request: Request) -> Response:
     """Lists CrewPlanner employees for a given employer. This is used by admin users for problem-solving."""
     employer = request.query_params["employer"]
@@ -21,7 +21,7 @@ def employees_get(request: Request) -> Response:
 
 
 @api_view(["GET"])
-@user_passes_test(lambda u: u.is_superuser)
+@user_passes_test(lambda u: u.is_superuser)  # type: ignore[union-attr]
 def report_get(request: Request) -> Response:
     """Gets a specified CrewPlanner report. This is used by admin users for problem-solving."""
     employer = request.query_params["employer"]

@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Any
 
 import pytest
 
@@ -6,7 +6,7 @@ from api.v1.shape.api.employee import EmployeeAPI
 
 
 @pytest.fixture
-def example_employee():
+def fixture_example_employee() -> dict[str, Any]:
     return {'addressCity': '',
             'addressCountry': '',
             'addressLine1': '',
@@ -70,9 +70,9 @@ def example_employee():
 
 
 @pytest.fixture
-def example_list(example_employee):
+def fixture_example_list(fixture_example_employee: dict[str, Any]) -> dict[str, Any]:
     return {'itemCount': 1,
-            'items': [example_employee
+            'items': [fixture_example_employee
                       ],
             'page': 1,
             'pageCount': 1,
@@ -80,7 +80,7 @@ def example_list(example_employee):
 
 
 @pytest.fixture
-def employee_spec():
+def fixture_employee_spec() -> dict[str, dict[str, str]]:
     return {
         "company": {
             "companyId": "c_TrDoQRg4JbyBiAmYSUfXHi"
@@ -91,11 +91,11 @@ def employee_spec():
     }
 
 
-def test_patch_new_employee(employee_spec: Dict):
+def test_patch_new_employee(fixture_employee_spec: dict) -> None:
     # Arrange
     # Employee is matched using CrewPlanner ID "employeeCode"
     new_employee = {
-        "spec": employee_spec,
+        "spec": fixture_employee_spec,
         "employee": {
             "firstName": "John",
             "lastName": "Smith",
@@ -138,10 +138,10 @@ def test_patch_new_employee(employee_spec: Dict):
     assert isinstance(actual_pay_id, str)
 
 
-def test_patch_employee_update(employee_spec: Dict):
+def test_patch_employee_update(fixture_employee_spec: dict) -> None:
     # Arrange
     update_employee = {
-        "spec": employee_spec,
+        "spec": fixture_employee_spec,
         "employee": {
             "addressLine1": "21 fenchurch street",
             "addressLine2": "",
@@ -175,10 +175,10 @@ def test_patch_employee_update(employee_spec: Dict):
     assert delete_actual.json() == {}
 
 
-def test_get_employee(example_employee: Dict):
+def test_get_employee(fixture_example_employee: dict) -> None:
     # Arrange
     employee_id = "ee_YNaNnaw2sEqoDJLXQdx55G"
-    expected_data = example_employee
+    expected_data = fixture_example_employee
     expected_status_code = 200
 
     # Act
@@ -189,10 +189,10 @@ def test_get_employee(example_employee: Dict):
     assert actual.json() == expected_data
 
 
-def test_list_employees(example_list: Dict):
+def test_list_employees(fixture_example_list: dict) -> None:
     # Arrange
     company_id = "c_TrDoQRg4JbyBiAmYSUfXHi"
-    expected_data = example_list
+    expected_data = fixture_example_list
     expected_status_code = 200
 
     # Act

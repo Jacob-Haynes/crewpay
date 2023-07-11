@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Optional
 
 import requests
 
@@ -13,12 +13,12 @@ class EmployeeAPI(ShapeAPI):
         return self._get(endpoint, params=params)
 
     # Not needed as Patch method exists
-    # def create_employee(self, employee_data: Dict) -> requests.Response:
+    # def create_employee(self, employee_data: dict) -> requests.Response:
     #     """Creates a new employee in a company"""
     #     endpoint = "/employee"
     #     return self._post(endpoint, data=employee_data)
 
-    def patch_employee(self, employee_data: Dict) -> requests.Response:
+    def patch_employee(self, employee_data: dict) -> requests.Response:
         """Creates a new, or partial updates an existing employee.
         Existing employees are matched using rules in spec:
         A company must be included
@@ -40,7 +40,7 @@ class EmployeeAPI(ShapeAPI):
         return self._get(endpoint)
 
     # Not needed as Patch method exists
-    # def update_employee(self, employee_id: str, employee_data: Dict) -> requests.Response:
+    # def update_employee(self, employee_id: str, employee_data: dict) -> requests.Response:
     #     """Updates an employee, all fields are optional, only sent fields will be updated"""
     #     endpoint = f"/employee/{employee_id}"
     #     return self._post(endpoint, data=employee_data)
@@ -51,13 +51,13 @@ class EmployeeAPI(ShapeAPI):
         return self._delete(endpoint)
 
     # Not needed as Patch method exists
-    # def starter_employee(self, employee_id: str, starter_data: Dict) -> requests.Response:
+    # def starter_employee(self, employee_id: str, starter_data: dict) -> requests.Response:
     #     """Mark the employee as a starter and set appropriate tax code and starer declaration."""
     #     endpoint = f"/employee/{employee_id}/starter"
     #     return self._post(endpoint, data=starter_data)
 
     # Not needed as Patch method exists
-    # def migrated_employee(self, employee_id: str, migration_data: Dict) -> requests.Response:
+    # def migrated_employee(self, employee_id: str, migration_data: dict) -> requests.Response:
     #     """Mark the employee as a migrated from another system. No starter info will be sent to HMRC."""
     #     endpoint = f"/employee/{employee_id}/migrated"
     #     return self._post(endpoint, data=migration_data)

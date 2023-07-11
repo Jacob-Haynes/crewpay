@@ -1,24 +1,22 @@
-from typing import Dict, List, Optional, Tuple
-
 import requests
+from django.contrib.auth.models import User
 from pydantic import ValidationError
 
 from api.v1.crewplanner.dto.dto_cp_shift import CPShift
 from crewpay.models import CrewplannerUser, Employer, InvalidShift
 
-""" Handles all report endpoint related CrewPlanner functions """
 
-
-def api_get_cp_report(stub: str, access_token: str, start_date: str, end_date: str) -> List[Dict]:
+def api_get_cp_report(stub: str, access_token: str, start_date: str, end_date: str) -> list[dict]:
     """Gets reports from the CrewPlanner API."""
     response = requests.get(
         f"https://{stub}.crewplanner.com/api/v1/client/report?filter[after]={start_date}&filter[before]={end_date}"
         f"&filter[include_external_workers]=false&filter[contract_types]=VSA,EMP",
+        timeout=60,
         headers={"Authorization": f"Bearer {access_token}"},
     )
     if not response.ok:
         raise ValueError(response.json())
-    results = response.json()["data"]
+    results: list[dict] = response.json()["data"]
     cursor = response.json()["meta"]["next_cursor"]
 
     while cursor is not None:
@@ -26,16 +24,18 @@ def api_get_cp_report(stub: str, access_token: str, start_date: str, end_date: s
             f"https://{stub}.crewplanner.com/api/v1/client/report?filter[after]={start_date}&filter[before]={end_date}"
             f"&filter[include_external_workers]=false&filter[contract_types]=VSA,EMP&cursor={cursor}",
             headers={"Authorization": f"Bearer {access_token}"},
+            timeout=60,
         )
         if not response.ok:
             raise ValueError(response.json())
-        results += response.json()["data"]
+        new_results: list[dict] = response.json()["data"]
+        results += new_results
         cursor = response.json()["meta"]["next_cursor"]
 
     return results
 
 
-def create_shift_lines(user, start_date: str, end_date: str) -> Tuple[List[CPShift], int]:
+def create_shift_lines(user: User, start_date: str, end_date: str) -> tuple[list[CPShift], int]:
     """Gets a CP report and creates a list of CPShift objects."""
     employer = Employer.objects.get(user=user).id
     stub = CrewplannerUser.objects.get(user=user).stub
@@ -46,7 +46,7 @@ def create_shift_lines(user, start_date: str, end_date: str) -> Tuple[List[CPShi
     return [shift for shift in shift_lines if shift is not None], failures
 
 
-def validate_shift_line(employer: str, shift: Dict) -> Optional[CPShift]:
+def validate_shift_line(employer: str, shift: dict) -> CPShift | None:
     """Validates and creates a CPShift object from a CrewPlanner report line."""
     try:
         cp_shift = CPShift(**shift)
@@ -62,3 +62,4 @@ def validate_shift_line(employer: str, shift: Dict) -> Optional[CPShift]:
             employer=Employer.objects.get(id=employer),
         )
         invalid_shift.save()
+        return None

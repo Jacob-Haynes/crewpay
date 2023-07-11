@@ -1,33 +1,18 @@
 [MAIN]
 
-# Python code to execute, usually for sys.path manipulation such as
-# pygtk.require().
-#init-hook=
-
-# Files or directories to be skipped. They should be base names, not
-# paths.
-ignore=CVS
-
-# Add files or directories matching the regex patterns to the ignore-list. The
-# regex matches against paths and can be in Posix or Windows format.
-ignore-paths=
-
-# Files or directories matching the regex patterns are skipped. The regex
-# matches against base names, not paths.
-ignore-patterns=^\.#
-
 # Pickle collected data for later comparisons.
 persistent=yes
 
 # List of plugins (as comma separated values of python modules names) to load,
 # usually to register additional checkers.
-load-plugins=
-    pylint_django,
-    pylint_pydantic
+load-plugins = pylint_pydantic,
+               pylint_django
+
+django-settings-module=crewpay.settings
 
 # Use multiple processes to speed up Pylint. Specifying 0 will auto-detect the
 # number of processors available to use.
-jobs=1
+jobs=0
 
 # When enabled, pylint would attempt to guess common misconfiguration and emit
 # user-friendly hints instead of false-positive error messages.
@@ -43,7 +28,7 @@ unsafe-load-any-extension=no
 extension-pkg-allow-list=
 
 # Minimum supported python version
-py-version = 3.8.0
+py-version = 3.10.0
 
 # Control the amount of potential inferred values when inferring a single
 # object. This can help the performance when dealing with large functions or
@@ -97,7 +82,7 @@ disable=
     format,
     # We anticipate #3512 where it will become optional
     fixme,
-    consider-using-assignment-expr,
+    imported-auth-user
 
 
 [REPORTS]
@@ -164,6 +149,10 @@ ignore-signatures=yes
 
 
 [VARIABLES]
+
+# Argument names that match this expression will be ignored. Default to name
+# with leading underscore.
+ignored-argument-names = _.*|^ignored_|^unused_|^fixture_
 
 # Tells whether we should check for unused import in __init__ files.
 init-import=no
@@ -418,9 +407,6 @@ max-statements = 50
 # Maximum number of attributes for a class (see R0902).
 max-attributes=11
 
-# Maximum number of statements in a try-block
-max-try-statements = 7
-
 [CLASSES]
 
 # List of method names used to declare (i.e. assign) instance attributes.
@@ -439,71 +425,12 @@ exclude-protected=_asdict,_fields,_replace,_source,_make
 # Warn about protected attribute access inside special methods
 check-protected-access-in-special-methods=no
 
-[IMPORTS]
-
-# List of modules that can be imported at any level, not just the top level
-# one.
-allow-any-import-level=
-
-# Allow wildcard imports from modules that define __all__.
-allow-wildcard-with-all=no
-
-# Allow explicit reexports by alias from a package __init__.
-allow-reexport-from-package=no
-
-# Analyse import fallback blocks. This can be used to support both Python 2 and
-# 3 compatible code, which means that the block might have code that exists
-# only in one or another interpreter, leading to false positives when analysed.
-analyse-fallback-blocks=no
-
-# Deprecated modules which should not be used, separated by a comma
-deprecated-modules=regsub,TERMIOS,Bastion,rexec
-
-# Create a graph of every (i.e. internal and external) dependencies in the
-# given file (report RP0402 must not be disabled)
-import-graph=
-
-# Create a graph of external dependencies in the given file (report RP0402 must
-# not be disabled)
-ext-import-graph=
-
-# Create a graph of internal dependencies in the given file (report RP0402 must
-# not be disabled)
-int-import-graph=
-
-# Force import order to recognize a module as part of the standard
-# compatibility libraries.
-known-standard-library=
-
-# Force import order to recognize a module as part of a third party library.
-known-third-party=enchant
-
-# Couples of modules and preferred modules, separated by a comma.
-preferred-modules=
-
 
 [EXCEPTIONS]
 
 # Exceptions that will emit a warning when being caught. Defaults to
 # "Exception"
 overgeneral-exceptions=builtins.Exception
-
-
-[TYPING]
-
-# Set to ``no`` if the app / library does **NOT** need to support runtime
-# introspection of type annotations. If you use type annotations
-# **exclusively** for type checking of an application, you're probably fine.
-# For libraries, evaluate if some users what to access the type hints at
-# runtime first, e.g., through ``typing.get_type_hints``. Applies to Python
-# versions 3.7 - 3.9
-runtime-typing = no
-
-
-[DEPRECATED_BUILTINS]
-
-# List of builtins function names that should not be used, separated by a comma
-bad-functions=map,input
 
 
 [REFACTORING]
@@ -527,11 +454,3 @@ check-quote-consistency=no
 # This flag controls whether the implicit-str-concat should generate a warning
 # on implicit string concatenation in sequences defined over several lines.
 check-str-concat-over-line-jumps=no
-
-
-[CODE_STYLE]
-
-# Max line length for which to sill emit suggestions. Used to prevent optional
-# suggestions which would get split by a code formatter (e.g., black). Will
-# default to the setting for ``max-line-length``.
-#max-line-length-suggestions=
