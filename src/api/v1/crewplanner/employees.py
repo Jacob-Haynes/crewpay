@@ -2,19 +2,15 @@ import json
 from typing import Dict, List, Optional
 
 import requests
-from django.contrib.auth.decorators import user_passes_test
 from pydantic import ValidationError
-from rest_framework.decorators import api_view
-from rest_framework.request import Request
-from rest_framework.response import Response
 
 from api.v1.crewplanner.dto.dto_cp_employee import CPEmployee
-from crewpay.models import CrewplannerUser, Employer, InvalidEmployee
+from crewpay.models import Employer, InvalidEmployee
 
 """ Handles all employee endpoint related CrewPlanner functions """
 
 
-def crewplanner_employees_get(stub: str, access_token: str) -> List[CPEmployee]:  # pylint: disable=unused-argument
+def crewplanner_employees_get(stub: str, access_token: str) -> List[CPEmployee]:
     """Get all and validating CrewPlanner employees."""
     results = api_get_cp_employees(stub, access_token)
     return [validate_employee(stub, employee) for employee in results]
@@ -43,7 +39,7 @@ def validate_employee(stub: str, employee: Dict) -> Optional[CPEmployee]:
         invalid_employee.save()
 
 
-def api_get_cp_employees(stub: str, access_token: str) -> List[Dict]:  # pylint: disable=unused-argument
+def api_get_cp_employees(stub: str, access_token: str) -> List[Dict]:
     """Gets employees from the CrewPlanner API."""
     response = requests.get(
         f"https://{stub}.crewplanner.com/api/v1/client/employees?filter[status]=verified&filter["

@@ -12,6 +12,12 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 
+from environ import Env
+
+# env vars
+env = Env()
+Env.read_env(env_file=str(Path(__file__).parents[2].joinpath(".env")))
+
 # CrewPay version
 CREWPAY_VERSION = "0.0.1"
 

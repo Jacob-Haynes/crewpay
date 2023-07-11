@@ -1,0 +1,56 @@
+{% include "base/base_logged_in.html" %}
+
+<a class="ui blue button" href="/admin">Admin Panel</a>
+<br>
+
+<div style="display:flex;justify-content:center;align-items:center;width:100%;height:100%;">
+  <div style="width:50%;height:100%">
+
+      <h1> Sync Employees </h1>
+
+      <form class="ui form" action="{% url 'sync' %}" method="get">
+        <div class="field">
+            {{ employer_selector }}
+        </div>
+          {% csrf_token %}
+          <button class="ui blue button" type="submit">Sync</button>
+      </form>
+
+      <br>
+
+      <h1> Run Payroll </h1>
+
+      <form class="ui form" action="/api/v1/staffology/payruns" method="get">
+          <div class="field">
+            {{ employer_selector }}
+          </div>
+          <div class="field">
+            <label for="tax_year">Choose the tax year:</label>
+            <select id="tax_year" name="tax_year">
+                <option value="Year2023">2023</option>
+                <option value="Year2024">2024</option>
+                <option value="Year2025">2025</option>
+                <option value="Year2026">2026</option>
+                <option value="Year2027">2027</option>
+                <option value="Year2028">2028</option>
+                <option value="Year2029">2029</option>
+                <option value="Year2030">2030</option>
+            </select>
+          </div>
+          <div class="field">
+              <label for="period_arrears">Choose how many earning periods in arrears:</label>
+              <select id="period_arrears" name="period_arrears">
+                  <option value="0">Current period</option>
+                  <option value="1">Previous period</option>
+                  <option value="2">Two periods prior</option>
+                  <option value="3">Three periods prior</option>
+              </select>
+          </div>
+          {% csrf_token %}
+          <button class="ui blue button" type="submit">Run</button>
+      </form>
+
+      <br>
+
+  </div>
+</div>

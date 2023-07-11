@@ -1,18 +1,11 @@
-from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth.models import User
 from django.core.handlers.wsgi import WSGIRequest
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.shortcuts import redirect, render
 from markupsafe import Markup
-from rest_framework.authtoken.models import Token
 
-from api.v1.staffology.employees.sync import sync_employees
-from api.v1.staffology.employers.employers import create_employer, staffology_employer
 from crewpay.forms import EmployerForm
-from crewpay.models import CrewplannerUser, Employer, StaffologyUser
+from crewpay.models import Employer
 from crewpay.settings import CREWPAY_VERSION
 
 
@@ -86,58 +79,16 @@ def contact(request):
 
 @login_required(login_url="/")
 def settings(request):
-    if "staffology_connected_already" in request.GET:
-        context = {"staffology_connected_already": True}
-    elif "staffology_connected_success" in request.GET:
-        context = {"staffology_connected_success": True}
-    else:
-        context = {}
-
+    context = {}
     employer_selector = EmployerForm()
     employer_selector.fields["employer"].choices = get_employer_choices()
     context["employer_selector"] = employer_selector
     return render(request, "logged_in/settings.html", context)
 
 
-@login_required(login_url="/")
-def token(request):
-    user_token = Token.objects.get(user__exact=request.user)
-    return render(request, "logged_in/token.html", {"token": user_token})
-
-
 @user_passes_test(lambda u: u.is_superuser)
 def create_user(request):
-    try:
-        User.objects.get(username=request.POST["name"])
-        return redirect("/onboard?user_exists=true")
-    except User.DoesNotExist:
-        new_user = User(username=request.POST["name"], password=User.objects.make_random_password())
-        new_cp_user = CrewplannerUser(
-            user=new_user, access_key=request.POST["crewplanner_key"], stub=request.POST["stub"]
-        )
-        new_user.save()
-        new_cp_user.save()
-        employer = staffology_employer(request)
-        create_employer(
-            new_user,
-            request.POST["pay_period"],
-            request.POST["tax_year"],
-            request.POST["period_end"],
-            request.POST["payment_date"],
-            employer,
-        )
-        return redirect("/onboard?user_created=true")
-
-
-@user_passes_test(lambda u: u.is_superuser)
-def create_staffology_user(request):
-    try:
-        StaffologyUser.objects.get(user=request.user)
-        return redirect("/?staffology_connected_already=true")
-    except StaffologyUser.DoesNotExist:
-        new_staffology_user = StaffologyUser(user=request.user, staffology_key=request.POST["staffology_key"])
-        new_staffology_user.save()
-        return redirect("/?staffology_connected_success=true")
+    return redirect("/onboard?user_created=true")
 
 
 def to_camel_case(snake_str):
@@ -146,19 +97,11 @@ def to_camel_case(snake_str):
 
 @user_passes_test(lambda u: u.is_superuser)
 def sync_employees_view(request: WSGIRequest):
-    # get employer
-    employer = request.GET["employer"]
-    result = sync_employees(employer)
-
-    formatted_failures = []
-    for failures in result["failed_syncs"]:
-        formatted_employee_failures = []
-        for employee_failures in failures["error"]:
-            errors = f"<b>{to_camel_case(employee_failures['loc'][-1])}</b>:<br> &emsp; {employee_failures['msg']}"
-            formatted_employee_failures.append(errors)
-
-        failures["error"] = Markup("<br>".join(formatted_employee_failures))
-        formatted_failures.append(failures)
-
-    context = {"response_data": result}
+    context = {}
     return render(request, "logged_in/sync.html", context)
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def run_payroll_view(request: WSGIRequest):
+    context = {}
+    return render(request, "logged_in/payroll.html", context)

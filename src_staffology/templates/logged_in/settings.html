@@ -1,0 +1,72 @@
+{% include "base/base_logged_in.html" %}
+
+<a class="ui blue button" href="/admin">Admin Panel</a>
+<br>
+<br>
+<a class="ui blue button" href="/api/v1/staffology/employers/">Get Employers</a>
+
+<div style="display:flex;justify-content:center;align-items:center;width:100%;height:100%;">
+  <div style="width:50%;height:100%">
+
+    <h1> Get Crewplanner employees </h1>
+    <form class="ui form" action="/api/v1/crewplanner/employees/" method="get">
+        <div class="field">
+            {{ employer_selector}}
+        </div>
+        {% csrf_token %}
+        <button class="ui blue button" type="submit">Get</button>
+    </form>
+    <br>
+
+    <h1> Get Crewplanner report </h1>
+    <form class="ui form" action="/api/v1/crewplanner/report/" method="get">
+        <div class="field">
+            {{ employer_selector}}
+        </div>
+        <div class="field">
+            <label for="start_date">Start date:</label>
+            <input type="text" name="start_date" placeholder="yyyy-mm-dd"><br>
+        </div>
+        <div class="field">
+            <label for="end_date">End date:</label>
+            <input type="text" name="end_date" placeholder="yyyy-mm-dd"><br>
+        </div>
+        {% csrf_token %}
+        <button class="ui blue button" type="submit">Get</button>
+    </form>
+    <br>
+
+    <h1> Connect Staffology </h1>
+
+    <div>
+        {% if staffology_connected_already %}
+        <div class="ui icon warning message">
+            <i class="exclamation icon"></i>
+            <div class="content">
+                <div class="header">
+                    Staffology Already Connected!
+                </div>
+            </div>
+        </div>
+        {% elif staffology_connected_success %}
+        <div class="ui icon positive message">
+            <i class="plus icon"></i>
+            <div class="content">
+                <div class="header">
+                    Staffology Connected!
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    <div>
+        <form class="ui form" action="/user/connect/staffology" method="post">
+            <div class="field">
+                <input type="text" name="staffology_key" placeholder="API Key..."><br>
+            </div>
+            {% csrf_token %}
+            <button class="ui blue button" type="submit">Connect</button>
+        </form>
+    </div>
+  </div>
+</div>

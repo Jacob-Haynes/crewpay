@@ -16,31 +16,19 @@ class CrewplannerUser(models.Model):
     )
 
 
-class StaffologyUser(models.Model):
-    user = models.OneToOneField(User, related_name="staffology_user", on_delete=models.CASCADE)
-    staffology_key = models.CharField(
-        unique=True,
-        help_text="Required. Staffology API key",
-        max_length=500,
-    )
-
-
 class Employer(models.Model):
     user = models.OneToOneField(User, related_name="employer", on_delete=models.CASCADE)
     id = models.CharField(
         primary_key=True,
         unique=True,
-        help_text="staffology employer ID",
+        help_text="shape employerId",
         max_length=500,
     )
-    pay_period = models.CharField(max_length=20, default="Monthly")
 
 
 class Employee(models.Model):
     employer = models.ForeignKey(Employer, related_name="employees", on_delete=models.CASCADE)
     crewplanner_id = models.CharField(unique=True, help_text="Crewplanner employee ID", max_length=500)
-    staffology_id = models.CharField(unique=True, help_text="Crewplanner employee ID", max_length=500)
-    payroll_code = models.CharField(help_text="Staffology payroll code", max_length=20)
     status = models.CharField(help_text="ACTIVE or ARCHIVED (CP driven)", max_length=20)
     payload_hash = models.CharField(max_length=64)
 
