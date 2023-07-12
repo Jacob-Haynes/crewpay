@@ -61,18 +61,22 @@ def test_get_failure(fixture_shape_api: ShapeAPI) -> None:
             fixture_shape_api._get('/endpoint')
 
 
-def test_post_success(fixture_shape_api: ShapeAPI) -> None:
+@patch.object(ShapeAPI, "_get_headers")
+def test_post_success(mock_get_headers: Mock, fixture_shape_api: ShapeAPI) -> None:
     mock_response = MagicMock()
-    mock_response.status_code = 201
+    mock_response.status_code = 200
+    expected_headers = {}
+    mock_get_headers.return_value = expected_headers
 
     with patch('requests.post', return_value=mock_response) as mock_post:
         response = fixture_shape_api._post('/endpoint', data={'key': 'value'})
 
-    assert response.status_code == 201
+    assert response.status_code == 200
     mock_post.assert_called_once_with(
         fixture_shape_api.base_url + '/endpoint',
         json={'key': 'value'},
-        headers=fixture_shape_api._get_headers()
+        headers=expected_headers,
+        timeout=60
     )
 
 
@@ -86,9 +90,12 @@ def test_post_failure(fixture_shape_api: ShapeAPI) -> None:
             fixture_shape_api._post('/endpoint', data={'key': 'value'})
 
 
-def test_patch_success(fixture_shape_api: ShapeAPI) -> None:
+@patch.object(ShapeAPI, "_get_headers")
+def test_patch_success(mock_get_headers: Mock, fixture_shape_api: ShapeAPI) -> None:
     mock_response = MagicMock()
     mock_response.status_code = 200
+    expected_headers = {}
+    mock_get_headers.return_value = expected_headers
 
     with patch('requests.patch', return_value=mock_response) as mock_patch:
         response = fixture_shape_api._patch('/endpoint', data={'key': 'value'})
@@ -97,7 +104,8 @@ def test_patch_success(fixture_shape_api: ShapeAPI) -> None:
     mock_patch.assert_called_once_with(
         fixture_shape_api.base_url + '/endpoint',
         json={'key': 'value'},
-        headers=fixture_shape_api._get_headers()
+        headers=expected_headers,
+        timeout=60
     )
 
 
@@ -111,9 +119,12 @@ def test_patch_failure(fixture_shape_api: ShapeAPI) -> None:
             fixture_shape_api._patch('/endpoint', data={'key': 'value'})
 
 
-def test_delete_success(fixture_shape_api: ShapeAPI) -> None:
+@patch.object(ShapeAPI, "_get_headers")
+def test_delete_success(mock_get_headers: Mock, fixture_shape_api: ShapeAPI) -> None:
     mock_response = MagicMock()
     mock_response.status_code = 204
+    expected_headers = {}
+    mock_get_headers.return_value = expected_headers
 
     with patch('requests.delete', return_value=mock_response) as mock_delete:
         response = fixture_shape_api._delete('/endpoint')
@@ -121,7 +132,8 @@ def test_delete_success(fixture_shape_api: ShapeAPI) -> None:
     assert response.status_code == 204
     mock_delete.assert_called_once_with(
         fixture_shape_api.base_url + '/endpoint',
-        headers=fixture_shape_api._get_headers()
+        headers=expected_headers,
+        timeout=60
     )
 
 
