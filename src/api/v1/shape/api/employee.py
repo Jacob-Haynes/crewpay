@@ -5,7 +5,7 @@ import requests
 from api.v1.shape.api.base import ShapeAPI
 
 
-class EmployeeAPI(ShapeAPI):
+class ShapeEmployeeAPI(ShapeAPI):
     def list_employees(self, company_id: Optional[str] = None) -> requests.Response:
         """Returns a list of employees"""
         endpoint = "/employee"

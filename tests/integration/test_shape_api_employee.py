@@ -2,7 +2,7 @@ from typing import Any
 
 import pytest
 
-from api.v1.shape.api.employee import EmployeeAPI
+from api.v1.shape.api.employee import ShapeEmployeeAPI
 
 
 @pytest.fixture
@@ -126,7 +126,7 @@ def test_patch_new_employee(fixture_employee_spec: dict) -> None:
     expected_status_code = 200
 
     # Act
-    actual = EmployeeAPI().patch_employee(new_employee)
+    actual = ShapeEmployeeAPI().patch_employee(new_employee)
     actual_data = actual.json()
     actual_employee_id = actual_data.pop('employeeId')
     actual_pay_id = actual_data.pop('payId')
@@ -158,7 +158,7 @@ def test_patch_employee_update(fixture_employee_spec: dict) -> None:
     expected_status_code = 200
 
     # Act
-    actual = EmployeeAPI().patch_employee(update_employee)
+    actual = ShapeEmployeeAPI().patch_employee(update_employee)
     actual_data = actual.json()
     actual_employee_id = actual_data.pop('employeeId')
     actual_pay_id = actual_data.pop('payId')
@@ -170,7 +170,7 @@ def test_patch_employee_update(fixture_employee_spec: dict) -> None:
     assert isinstance(actual_pay_id, str)
 
     # Cleanup & test Delete function
-    delete_actual = EmployeeAPI().delete_employee(actual_employee_id)
+    delete_actual = ShapeEmployeeAPI().delete_employee(actual_employee_id)
     assert delete_actual.status_code == expected_status_code
     assert delete_actual.json() == {}
 
@@ -182,7 +182,7 @@ def test_get_employee(fixture_example_employee: dict) -> None:
     expected_status_code = 200
 
     # Act
-    actual = EmployeeAPI().get_employee(employee_id)
+    actual = ShapeEmployeeAPI().get_employee(employee_id)
 
     # Assert
     assert actual.status_code == expected_status_code
@@ -196,7 +196,7 @@ def test_list_employees(fixture_example_list: dict) -> None:
     expected_status_code = 200
 
     # Act
-    actual = EmployeeAPI().list_employees(company_id)
+    actual = ShapeEmployeeAPI().list_employees(company_id)
 
     # Assert
     assert actual.status_code == expected_status_code
