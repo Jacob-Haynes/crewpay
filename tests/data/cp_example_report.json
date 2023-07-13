@@ -1,0 +1,176 @@
+[
+        {
+            "id": 1163410,
+            "project": {
+                "id": 730250,
+                "name": "payroll test 1",
+                "date": "2023-04-19",
+                "company": {
+                    "id": 14330,
+                    "name": "payroll test",
+                    "vat_number": null
+                },
+                "address": null
+            },
+            "slot": {
+                "id": 2202725,
+                "department": {
+                    "id": 4289,
+                    "group": null,
+                    "name": "Default department",
+                    "full_name": "Default department",
+                    "color": null,
+                    "requires_availability": true
+                },
+                "function": {
+                    "id": 13107,
+                    "name": "any",
+                    "color": null
+                }
+            },
+            "present": true,
+            "worker": {
+                "id": 1783264,
+                "name": "testy tester",
+                "phone_number": null,
+                "contract_type": "EMP",
+                "user": {
+                    "id": 142007,
+                    "first_name": "testy",
+                    "last_name": "tester",
+                    "email": "aajgoiajoia@yopmail.com",
+                    "date_of_birth": "2000-01-01",
+                    "employee_number": null,
+                    "nino": null,
+                    "bank_account": {
+                        "id": 120299,
+                        "type": "account_number_sort_code",
+                        "account_number": "05618862",
+                        "sort_code": "01-01-01"
+                    },
+                    "civil_status": null,
+                    "custom_fields": null
+                }
+            },
+            "timesheet": {
+                "planned": {
+                    "start": "2023-04-19T09:00:00+01:00",
+                    "end": "2023-04-19T17:00:00+01:00",
+                    "minutes": 480
+                },
+                "clocked": null,
+                "registered": {
+                    "start": "2023-04-19T09:00:00+01:00",
+                    "end": "2023-04-19T17:00:00+01:00",
+                    "gross_minutes": 480,
+                    "break": 0,
+                    "netto_minutes": 480
+                }
+            },
+            "wage": {
+                "type": "hourly",
+                "value": 10,
+                "day_rate_max_hours": null,
+                "total": 80
+            },
+            "cost": {
+                "type": null,
+                "value": null,
+                "day_rate_max_hours": null,
+                "total": 0
+            },
+            "payout": null,
+            "invoicing": null,
+            "modules": [],
+            "travel_distance": null,
+            "declaration": null,
+            "custom_fields": null
+        },
+        {
+            "id": 1163918,
+            "project": {
+                "id": 730923,
+                "name": "test 2",
+                "date": "2023-04-21",
+                "company": {
+                    "id": 14330,
+                    "name": "payroll test",
+                    "vat_number": null
+                },
+                "address": null
+            },
+            "slot": {
+                "id": 2204565,
+                "department": {
+                    "id": 4289,
+                    "group": null,
+                    "name": "Default department",
+                    "full_name": "Default department",
+                    "color": null,
+                    "requires_availability": true
+                },
+                "function": {
+                    "id": 13107,
+                    "name": "any",
+                    "color": null
+                }
+            },
+            "present": true,
+            "worker": {
+                "id": 1784997,
+                "name": "McTest Testy",
+                "phone_number": null,
+                "contract_type": "EMP",
+                "user": {
+                    "id": 143324,
+                    "first_name": "McTest",
+                    "last_name": "Testy",
+                    "email": "gajhg843tn@yopmail.com",
+                    "date_of_birth": "2000-01-01",
+                    "employee_number": null,
+                    "nino": null,
+                    "bank_account": {
+                        "id": 121221,
+                        "type": "account_number_sort_code",
+                        "account_number": "16811852",
+                        "sort_code": "01-01-01"
+                    },
+                    "civil_status": null,
+                    "custom_fields": null
+                }
+            },
+            "timesheet": {
+                "planned": {
+                    "start": "2023-04-21T09:00:00+01:00",
+                    "end": "2023-04-21T17:00:00+01:00",
+                    "minutes": 480
+                },
+                "clocked": null,
+                "registered": {
+                    "start": "2023-04-21T09:00:00+01:00",
+                    "end": "2023-04-21T16:00:00+01:00",
+                    "gross_minutes": 420,
+                    "break": 0,
+                    "netto_minutes": 420
+                }
+            },
+            "wage": {
+                "type": "hourly",
+                "value": 12,
+                "day_rate_max_hours": null,
+                "total": 84
+            },
+            "cost": {
+                "type": null,
+                "value": null,
+                "day_rate_max_hours": null,
+                "total": 0
+            },
+            "payout": null,
+            "invoicing": null,
+            "modules": [],
+            "travel_distance": null,
+            "declaration": null,
+            "custom_fields": null
+        }
+    ]
