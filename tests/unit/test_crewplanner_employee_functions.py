@@ -7,7 +7,7 @@ from pydantic import ValidationError
 from api.v1.crewplanner.api.base import CrewPlannerAPI
 from api.v1.crewplanner.dto.dto_cp_employee import CPEmployee
 from api.v1.crewplanner.employees import get_valid_cp_employees, validate_employee
-from crewpay.models import InvalidEmployee, Employer
+from crewpay.models import Employer, InvalidEmployee
 
 
 @pytest.fixture
