@@ -6,7 +6,7 @@ from api.v1.crewplanner.api.base import CrewPlannerAPI
 
 
 @pytest.fixture
-def mock_user():
+def mock_user() -> Mock:
     user = MagicMock()
     user.stub = "example-stub"
     user.access_key = "example-access-key"

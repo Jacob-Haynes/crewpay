@@ -71,12 +71,15 @@ def fixture_example_employee() -> dict[str, Any]:
 
 @pytest.fixture
 def fixture_example_list(fixture_example_employee: dict[str, Any]) -> dict[str, Any]:
-    return {'itemCount': 1,
-            'items': [fixture_example_employee
-                      ],
-            'page': 1,
-            'pageCount': 1,
-            'pageSize': 100}
+    return {
+        'itemCount': 1,
+        'items': [
+            fixture_example_employee
+                  ],
+        'page': 1,
+        'pageCount': 1,
+        'pageSize': 100
+    }
 
 
 @pytest.fixture

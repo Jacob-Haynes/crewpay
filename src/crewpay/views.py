@@ -11,6 +11,11 @@ from crewpay.models import Employer
 from crewpay.settings import CREWPAY_VERSION
 
 
+def to_camel_case(snake_str: str) -> str:
+    """Snake to camel case for interfacing"""
+    return " ".join(x.capitalize() for x in snake_str.lower().split("_"))
+
+
 def get_employer_choices() -> Tuple:
     """Used for populating the employer selector dropdown."""
     employers = Employer.objects.all()
@@ -89,12 +94,8 @@ def settings(request: WSGIRequest) -> HttpResponse:
 
 
 @user_passes_test(lambda u: u.is_superuser)  # type: ignore[union-attr]
-def create_user(request: WSGIRequest) -> HttpResponseRedirect:  # pylint: disable=unused-argument
+def create_user(request: WSGIRequest) -> HttpResponseRedirect:
     return redirect("/onboard?user_created=true")
-
-
-def to_camel_case(snake_str: str) -> str:
-    return " ".join(x.capitalize() for x in snake_str.lower().split("_"))
 
 
 @user_passes_test(lambda u: u.is_superuser)  # type: ignore[union-attr]

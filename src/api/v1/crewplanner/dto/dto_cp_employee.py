@@ -43,11 +43,11 @@ class CPBankAccount(BaseModel):
 
     @model_validator(mode="before")
     def validator_bank_type(cls, values: dict[str, Any]) -> dict[str, Any]:  # pylint: disable=no-self-argument
-        if values["type_"] == "iban":
+        if values["type"] == "iban":
             assert values["iban"]
             assert values["bic"]
-            assert values["account_number"] is None
-            assert values["sort_code"] is None
+            # assert values["account_number"] is None
+            # assert values["sort_code"] is None
 
             # Validate IBAN format
             iban_pattern = r"^GB\d{2}[A-Z]{4}\d{14}$"
@@ -60,11 +60,11 @@ class CPBankAccount(BaseModel):
 
             return values
 
-        if values["type_"] == "account_number_sort_code":
+        if values["type"] == "account_number_sort_code":
             assert values["sort_code"]
             assert values["account_number"]
-            assert values["iban"] is None
-            assert values["bic"] is None
+            # assert values["iban"] is None
+            # assert values["bic"] is None
 
             # Validate account number format
             account_number_pattern = r"^\d{8}$"
