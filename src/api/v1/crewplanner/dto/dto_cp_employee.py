@@ -1,15 +1,15 @@
 import re
-from typing import Optional, Union
+from typing import Any, Union
 
-from pydantic import BaseModel, Field, root_validator, validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class CPRegistrationNumber(BaseModel):
-    nino: Optional[str] = None
-    passport_number: Optional[str] = None
+    nino: str | None = None
+    passport_number: str | None = None
 
-    @validator("nino", pre=True)
-    def validate_nino(cls, value):
+    @field_validator("nino")
+    def validate_nino(cls, value: str | None) -> str | None:
         if value is not None:
             nino_pattern = r"^[A-CEGHJ-PR-TW-Z][A-CEGHJ-NPR-TW-Z]\d{6}[A-D\s]$"
             if not re.match(nino_pattern, value):
@@ -18,16 +18,16 @@ class CPRegistrationNumber(BaseModel):
 
 
 class CPAddress(BaseModel):
-    name: Optional[str]
+    name: str | None
     street: str
     number: str
-    addition: Optional[str]
+    addition: str | None
     zip_code: str
     city: str
-    country: Optional[str]
+    country: str | None
 
-    @validator("name", "street", "number", "addition", "zip_code", "city", "country")
-    def validate_characters(cls, value):
+    @field_validator("name", "street", "number", "addition", "zip_code", "city", "country")
+    def validate_characters(cls, value: str | None) -> str | None:
         valid_characters_pattern = r"^$|^[A-Za-z0-9 .,\-(\\)/=!\"%&*;<>\'+:?’]+$"
         if value is not None and not re.match(valid_characters_pattern, value):
             raise ValueError("Invalid characters in address field.")
@@ -36,13 +36,13 @@ class CPAddress(BaseModel):
 
 class CPBankAccount(BaseModel):
     type_: str = Field(alias="type")
-    account_number: Optional[str] = None
-    sort_code: Optional[str] = None
-    iban: Optional[str] = None
-    bic: Optional[str] = None
+    account_number: str | None = None
+    sort_code: str | None = None
+    iban: str | None = None
+    bic: str | None = None
 
-    @root_validator(allow_reuse=True)
-    def validator_bank_type(cls, values):
+    @model_validator(mode="before")
+    def validator_bank_type(cls, values: dict[str, Any]) -> dict[str, Any]:  # pylint: disable=no-self-argument
         if values["type_"] == "iban":
             assert values["iban"]
             assert values["bic"]
@@ -60,7 +60,7 @@ class CPBankAccount(BaseModel):
 
             return values
 
-        elif values["type_"] == "account_number_sort_code":
+        if values["type_"] == "account_number_sort_code":
             assert values["sort_code"]
             assert values["account_number"]
             assert values["iban"] is None
@@ -90,16 +90,16 @@ class CPCustomField(BaseModel):
     payroll_employee_statement: CPCustomFieldList
     payroll_student_loan_plan: CPCustomFieldList
     payroll_postgrad_loan: CPCustomFieldList
-    payroll_start_date: Optional[str] = None
+    payroll_start_date: str | None = None
 
 
 class CPEmployee(BaseModel):
     id: str
     first_name: str
     last_name: str
-    phone_number: Optional[str] = None
+    phone_number: str | None = None
     email: str
-    profile_picture_url: Optional[str] = None
+    profile_picture_url: str | None = None
     status: str
     civil_status: Union[str, None]
     gender: str

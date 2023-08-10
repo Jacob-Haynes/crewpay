@@ -4,9 +4,11 @@
 src/crewpay/_version.py
 .idea/
 venv/
+venv310/
 dist/
 build/
 .nox/
 .pytest_cache/
 .mypy_cache
 tests/scripts/
+.env

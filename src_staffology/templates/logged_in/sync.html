@@ -1,0 +1,60 @@
+{% include "base/base_logged_in.html" %}
+
+<table class="ui definition table" style="width: 20%; margin: 30px;">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Totals</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Employees Added</td>
+            <td>{{ response_data.employees_added }}</td>
+        </tr>
+        <tr>
+            <td>Failed to Sync</td>
+            <td>{{ response_data.failed_to_sync }}</td>
+        </tr>
+        <tr>
+            <td>Marked as Leaver</td>
+            <td>{{ response_data.marked_as_leaver }}</td>
+        </tr>
+        <tr>
+            <td>Marked as Rehired</td>
+            <td>{{ response_data.marked_as_rehired }}</td>
+        </tr>
+        <tr>
+            <td>Deleted Employees</td>
+            <td>{{ response_data.deleted_employees }}</td>
+        </tr>
+        <tr>
+            <td>Updated Employees</td>
+            <td>{{ response_data.updated_employees }}</td>
+        </tr>
+    </tbody>
+</table>
+
+<br>
+
+<table class="ui celled blue striped table" style="width: 90%; margin: 30px;">
+    <thead>
+        <tr>
+            <th>Employee ID</th>
+            <th>Name</th>
+            <th>Error</th>
+            <th>Date/Time</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for failed_sync in response_data.failed_syncs %}
+            <tr>
+                <td class="top aligned">{{ failed_sync.employee_id }}</td>
+                <td class="top aligned">{{ failed_sync.name }}</td>
+                <td>{{ failed_sync.error }}</td>
+                <td class="top aligned">{{ failed_sync.date_time }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
